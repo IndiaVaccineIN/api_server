@@ -105,3 +105,6 @@ dist
 
 # data folder
 data/
+
+# vscode files
+.vscode 
