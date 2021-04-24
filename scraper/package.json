@@ -1,7 +1,7 @@
 {
   "name": "cvc-scraper",
   "version": "0.1.0",
-  "description": "",
+  "description": "A quick script for scraping the cowin dashboard to find a list of all covid vaccination centers",
   "main": "index.js",
   "engines": {
     "node": ">=14.16.0"
@@ -15,7 +15,7 @@
     "clean-csv": "rm data/csv/*.csv",
     "clean-json": "rm data/json/district*.json data/json/allStates*.json"
   },
-  "author": "",
+  "author": "Joel Alenchery",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
