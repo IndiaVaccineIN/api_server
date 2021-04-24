@@ -13,10 +13,10 @@ npm install
 ## Usage
 
 ```
-npm run
+npm start
 ```
 
-This should run the script and save outputs to the data folder. 
+This should run the script and save output to the data folder. 
 
 ```
 npm clean-csv
