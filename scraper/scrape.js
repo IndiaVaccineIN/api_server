@@ -8,14 +8,16 @@ const makeDir = require("./lib/make-dir");
 const jsonDataDir = path.resolve(__dirname, "data", "json");
 const csvDataDir = path.resolve(__dirname, "data", "csv");
 
-try {
-  await makeDir(jsonDataDir);
-  await makeDir(csvDataDir);
-} catch (error) {
-  console.error(error);
-  console.error("Could not create data directories. Exiting ....");
-  process.exit(1);
-}
+(async () => {
+  try {
+    await makeDir(jsonDataDir);
+    await makeDir(csvDataDir);
+  } catch (error) {
+    console.error(error);
+    console.error("Could not create data directories. Exiting ....");
+    process.exit(1);
+  }
+})();
 
 // State information scraped from cowin dashboard
 /// TODO: dynamically get the state list from the api
