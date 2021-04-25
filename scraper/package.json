@@ -13,7 +13,8 @@
     "postinstall": "npm run requirements-check",
     "start": "node scrape.js",
     "clean-csv": "rm data/csv/*.csv",
-    "clean-json": "rm data/json/district*.json data/json/allStates*.json"
+    "clean-json": "rm data/json/district*.json data/json/allStates*.json",
+    "zip-data": "bash ./bin/zip-data.sh"
   },
   "author": "Joel Alenchery",
   "license": "ISC",
