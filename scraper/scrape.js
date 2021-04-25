@@ -210,39 +210,47 @@ async function writeToCsv(data, filePath) {
       }, ${district.state_name}`
     );
 
-    // for each district get data from the api
-    const districtReport = await getDistrictReport(
-      cowinApi,
-      district.state_id,
-      district.district_id,
-      today
-    );
+    try {
+      // for each district get data from the api
+      const districtReport = await getDistrictReport(
+        cowinApi,
+        district.state_id,
+        district.district_id,
+        today
+      );
+      // init a csv writer to save district wise csv
+      let districtCsvWriter = new CsvWriter(
+        path.resolve(
+          csvDataDir,
+          `districtReport_sid-${district.state_id}_did-${
+            district.district_id
+          }_${today}_${new Date().getTime()}.csv`
+        )
+      );
 
-    // init a csv writer to save district wise csv
-    let districtCsvWriter = new CsvWriter(
-      path.resolve(
-        csvDataDir,
-        `districtReport_sid-${district.state_id}_did-${
-          district.district_id
-        }_${today}_${new Date().getTime()}.csv`
-      )
-    );
+      // extract cvc data
+      let cvcs = districtReport.getBeneficiariesGroupBy;
 
-    // extract cvc data
-    let cvcs = districtReport.getBeneficiariesGroupBy;
+      // augment cvc data with state and district names
+      // write data back to aggregated as well as specific csv
+      for (let i = 0; i < cvcs.length; i++) {
+        const cvc = cvcs[i];
+        cvc["state_id"] = district.state_id;
+        cvc["state_name"] = district.state_name;
+        cvc["district_id"] = district.district_id;
+        cvc["district_name"] = district.district_name;
+        await districtCsvWriter.write(cvc);
+        await allDistrictsCsvWriter.write(cvc);
+      }
 
-    // augment cvc data with state and district names
-    // write data back to aggregated as well as specific csv
-    for (let i = 0; i < cvcs.length; i++) {
-      const cvc = cvcs[i];
-      cvc["state_id"] = district.state_id;
-      cvc["state_name"] = district.state_name;
-      cvc["district_id"] = district.district_id;
-      cvc["district_name"] = district.district_name;
-      await districtCsvWriter.write(cvc);
-      await allDistrictsCsvWriter.write(cvc);
+      districtCsvWriter.close();
+    } catch (error) {
+      console.error(
+        `[${new Date().toDateString()}]  Could not get report for ${
+          district.district_name
+        }, ${district.state_name}`,
+        error
+      );
     }
-
-    districtCsvWriter.close();
   }
 })();
