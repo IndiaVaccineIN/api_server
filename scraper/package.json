@@ -1,6 +1,6 @@
 {
   "name": "cvc-scraper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A quick script for scraping the cowin dashboard to find a list of all covid vaccination centers",
   "main": "index.js",
   "engines": {
