@@ -204,8 +204,7 @@ async function writeToCsv(data, filePath) {
   );
 
   // iterate through the list of districts
-  for (let index = 0; index < 5; index++) {
-    // for (let index = 0; index < districts.length; index++) {
+  for (let index = 0; index < districts.length; index++) {
     const district = districts[index];
     console.log(
       `[${new Date().toDateString()}] Getting report for ${
