@@ -19,6 +19,15 @@ npm start
 This should run the script and save output to the data folder. 
 
 ```
+npm full-cycle
+```
+
+This does a bunch of things
+- cleans the raw data folder
+- runs the script and scrapping
+- zips up the current run to the data-zip folder
+
+```
 npm clean-csv
 npm clean-json
 ```
@@ -27,8 +36,9 @@ Cleans the data directory deleting all data files that the script creates
 
 ## Data files
 
-- ./data/json : raw responses from the api 
-- ./data/csv : cvc information extracted and formatted as csv files 
+- ./data-raw/json : raw responses from the api 
+- ./data-raw/csv : cvc information extracted and formatted as csv files 
+- ./data-zip : stores compressed copies of a scrapping run (zips the ./data-raw folder after a full run)
 
 ### File name structure 
 
