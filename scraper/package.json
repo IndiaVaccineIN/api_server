@@ -12,8 +12,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "npm run requirements-check",
     "start": "node scrape.js",
-    "clean-csv": "rm data/csv/*.csv",
-    "clean-json": "rm data/json/district*.json data/json/allStates*.json",
+    "full-cycle": "npm run clean && node scrape.js && npm run zip-data",
+    "clean-csv": "rm data-raw/csv/*.csv || true",
+    "clean-json": "rm data-raw/json/district*.json data/json/allStates*.json || true",
+    "clean": "npm run clean-csv && npm run clean-json",
     "zip-data": "bash ./bin/zip-data.sh"
   },
   "author": "Joel Alenchery",

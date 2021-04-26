@@ -5,13 +5,15 @@ const jsonWriter = require("jsonfile");
 const path = require("path");
 const CsvWriter = require("./lib/csv-writer");
 const makeDir = require("./lib/make-dir");
-const jsonDataDir = path.resolve(__dirname, "data", "json");
-const csvDataDir = path.resolve(__dirname, "data", "csv");
+const jsonDataDir = path.resolve(__dirname, "data-raw", "json");
+const csvDataDir = path.resolve(__dirname, "data-raw", "csv");
+const zipDataDir = path.resolve(__dirname, "data-zip");
 
 (async () => {
   try {
     await makeDir(jsonDataDir);
     await makeDir(csvDataDir);
+    await makeDir(zipDataDir);
   } catch (error) {
     console.error(error);
     console.error("Could not create data directories. Exiting ....");
@@ -202,7 +204,8 @@ async function writeToCsv(data, filePath) {
   );
 
   // iterate through the list of districts
-  for (let index = 0; index < districts.length; index++) {
+  for (let index = 0; index < 5; index++) {
+    // for (let index = 0; index < districts.length; index++) {
     const district = districts[index];
     console.log(
       `[${new Date().toDateString()}] Getting report for ${

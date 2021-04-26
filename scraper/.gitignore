@@ -103,8 +103,8 @@ dist
 # TernJS port file
 .tern-port
 
-# data folder
-data/
+# data folders
+data-*/
 
 # vscode files
 .vscode 

@@ -1,3 +1,3 @@
 #/bin/bash
 now=$(date +"%Y-%m-%d_%H-%M")
-zip -r ./data/data_$now.zip ./data
+zip -r --exclude=*.DS_Store* ./data-zip/data_$now.zip ./data-raw
