@@ -13,8 +13,9 @@
     "postinstall": "npm run requirements-check",
     "start": "node scrape.js",
     "full-cycle": "npm run clean && node scrape.js && npm run zip-data",
+    "cron": "node bin/cron.js",
     "clean-csv": "rm data-raw/csv/*.csv || true",
-    "clean-json": "rm data-raw/json/district*.json data/json/allStates*.json || true",
+    "clean-json": "rm data-raw/json/district*.json data-raw/json/allStates*.json || true",
     "clean": "npm run clean-csv && npm run clean-json",
     "zip-data": "bash ./bin/zip-data.sh"
   },
@@ -22,12 +23,14 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
+    "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "fast-csv": "^4.3.6",
     "jsonfile": "^6.1.0",
     "lodash": "^4.17.21",
     "mkdirp": "^0.5.5",
     "moment": "^2.29.1",
+    "pm2": "^4.5.6",
     "semver": "^7.3.5"
   },
   "devDependencies": {
