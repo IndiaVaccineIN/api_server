@@ -108,3 +108,5 @@ data-*/
 
 # vscode files
 .vscode 
+
+package-lock.json

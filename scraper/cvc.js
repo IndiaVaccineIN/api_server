@@ -4,6 +4,10 @@
  */
 const axios = require('axios');
 
+const axiosRetry = require('axios-retry');
+// Exponential back-off retry delay between requests, to handle server issues
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
+
 const { DateTime } = require('luxon');
 
 const { GoogleSpreadsheet } = require('google-spreadsheet');
