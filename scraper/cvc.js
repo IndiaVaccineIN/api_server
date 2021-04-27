@@ -94,7 +94,8 @@ class State {
 
 
     return {
-      rows: Object.values(rows),
+      // Stable sort by District, then CVC to keep the rows consistent and not move around during refreshes
+      rows: Object.values(rows).sort((a, b) => `${a.District}-${a.CVC}`.localeCompare(`${b.District}-${b.CVC}`)),
       header: header
     };
   }
@@ -137,8 +138,6 @@ class District {
     return resp.data.getBeneficiariesGroupBy
   }
 }
-
-
 
 function getDateRange(n) {
   const today = DateTime.now().setZone('Asia/Kolkata');
