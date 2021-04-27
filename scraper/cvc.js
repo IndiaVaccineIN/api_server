@@ -143,7 +143,7 @@ class District {
 function getDateRange(n) {
   const today = DateTime.now().setZone('Asia/Kolkata');
   let range = [];
-  for (let i = 1; i < n; i++) {
+  for (let i = 0; i < n; i++) {
     range.push(today.minus({ day: i }).toISODate())
   }
   return range;
