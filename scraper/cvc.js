@@ -130,13 +130,13 @@ class State {
           return
         }
         for (const cvc of cvcs) {
-          if (rows[cvc.title] === undefined) {
-            rows[cvc.title] = {
-              "CVC": cvc.title,
+          if (rows[cvc.name] === undefined) {
+            rows[cvc.name] = {
+              "CVC": cvc.name,
               "District": cvc.district.name
             }
           }
-          rows[cvc.title][date] = cvc.today
+          rows[cvc.name][date] = cvc.today
         }
 
       }, { concurrency: 7 });
