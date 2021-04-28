@@ -10,6 +10,7 @@ axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 
 const { DateTime } = require('luxon');
 
+const { program } = require('commander');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const pMap = require('p-map')
 const CREDS = require('./key.json');
@@ -87,7 +88,7 @@ class State {
           if (rows[cvc.title] === undefined) {
             rows[cvc.title] = {
               "CVC": cvc.title,
-              "District": district.name
+              "District": cvc.district.name
             }
           }
           rows[cvc.title][date] = cvc.today
@@ -139,8 +140,18 @@ class District {
       date: date
     }
     const resp = await axios.get(url, { params: params });
-    return resp.data.getBeneficiariesGroupBy
+    return resp.data.getBeneficiariesGroupBy.map(c => new CVC(c.session_id, c.name, c.today, this))
   }
+}
+
+class CVC {
+  constructor(id, name, today, district) {
+    this.id = id;
+    this.name = name;
+    this.today = today;
+    this.district = district;
+  }
+
 }
 
 function getDateRange(n) {
@@ -152,16 +163,35 @@ function getDateRange(n) {
   return range;
 }
 
-async function main() {
+async function getRawDistricts() {
   const url = 'https://dashboard.cowin.gov.in/assets/json/csvjson.json';
-  const DISTRICTS = (await axios.get(url)).data;
+  return (await axios.get(url)).data;
+}
 
-  const states = STATE_IDS.map(({ id, name }) => new State(id, name, DISTRICTS.filter(d => d.state_id == id)))
+async function main() {
+  program.option(
+    '--state <states...>', 'States to scrape',
+  ).option(
+    '--all-states', 'Scrape all states'
+  ).parse()
+
+  const opts = program.opts();
+
+  const districts = await getRawDistricts()
   const dates = getDateRange(7);
+
+  const allStates = STATE_IDS.map(({ id, name }) => new State(id, name, districts.filter(d => d.state_id == id)))
+  let states = []
+
+  if (opts.allStates) {
+    states = allStates;
+  } else {
+    states = allStates.filter(s => opts.state.indexOf(s.name) !== -1)
+  }
 
   pMap(states, async state => {
     await state.publishCVCData(SHEET_ID, dates)
-  }, { concurrency: 1 })
+  }, { concurrency: 4 })
 }
 
 main()
