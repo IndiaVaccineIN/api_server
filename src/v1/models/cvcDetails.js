@@ -27,6 +27,8 @@ const cvcSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
+cvcSchema.index({ state: 1, district: 1, cvc:1, day:1}, { unique: true });
+
 cvcSchema.methods.toJSON = function () {
     const cvcDetails = this
     const cvcDetailsObj = cvcDetails.toObject()
