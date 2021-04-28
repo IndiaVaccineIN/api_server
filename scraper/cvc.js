@@ -4,6 +4,7 @@
  */
 const axios = require('axios');
 
+const cheerio = require('cheerio');
 const axiosRetry = require('axios-retry');
 // Exponential back-off retry delay between requests, to handle server issues
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
@@ -17,6 +18,7 @@ const CREDS = require('./key.json');
 
 // Puts data in this spreadsheet https://docs.google.com/spreadsheets/d/1NR36K5nBy4rI69qU6dc5MGt2QwwTXZugDnjlWnei3X8/edit#gid=19019745
 const SHEET_ID = "1NR36K5nBy4rI69qU6dc5MGt2QwwTXZugDnjlWnei3X8"
+const LOCATION_SHEET_ID = "1iC7Ai5mATnPTHuP9eSTEWJ8GLZKLWCh5fdyVRcqblsU"
 
 const STATE_IDS = [
   { name: "Andaman and Nicobar Islands", id: "1" },
@@ -66,8 +68,51 @@ class State {
     this.districts = districts.map(d => new District(d.district_id, d.district_name, this));
   }
 
-  async getCVCData(dates) {
+  async getCVCLocations() {
+    const rows = []
+    const header = [
+      'District',
+      'CVC ID',
+      'CVC',
+      'Address',
+      'Pin Code',
+      'Lattitude',
+      'Longitude'
+    ]
+    await pMap(this.districts, async district => {
+      console.log(`Processing ${this.name} -> ${district.name}`)
+      const cvcs = await district.getCVCs(DateTime.now().minus({ day: 1 }));
+      pMap(cvcs, async cvc => {
+        const location = await cvc.getLocation();
+        console.log(`Processing ${this.name} -> ${district.name} -> ${cvc.name}`)
+        let row = {
+          'District': district.name,
+          'CVC': cvc.name,
+          'CVC ID': cvc.id
+        }
+        if (location) {
+          rows.push({
+            'Address': location.address,
+            'Pin Code': location.pinCode,
+            'Lattitude': location.lat,
+            'Longitude': location.lon,
+            ...row
+          })
+        } else {
+          rows.push(row)
+        }
+      }, { concurrency: 8 });
+    }, { concurrency: 2 });
 
+
+    return {
+      // Stable sort by District, then CVC to keep the rows consistent and not move around during refreshes
+      rows: Object.values(rows).sort((a, b) => `${a.District}-${a.CVC}`.localeCompare(`${b.District}-${b.CVC}`)),
+      header: header
+    };
+  }
+
+  async getCVCData(dates) {
     const rows = {}
     const header = [
       'District',
@@ -78,10 +123,10 @@ class State {
       // Make requests for all the dates for each district in parallel
       // FIXME: Throttle this when necessary
       await pMap(dates, async date => {
-        console.log(`Processing ${this.name} -> ${district.name} for ${date}`)
+        console.log(`Processing ${this.name} -> ${district.name}`)
         const cvcs = await district.getCVCs(date);
         if (!cvcs) {
-          console.log(`No data for ${this.name} -> ${district.name} for ${date}`)
+          console.log(`No data for ${this.name} -> ${district.name}`)
           return
         }
         for (const cvc of cvcs) {
@@ -105,8 +150,8 @@ class State {
     };
   }
 
-  async publishCVCData(sheetId, dates) {
-    const response = await this.getCVCData(dates);
+  async publishCVCData(sheetId, func) {
+    const response = await func(this);
 
     const doc = new GoogleSpreadsheet(sheetId);
     await doc.useServiceAccountAuth(CREDS);
@@ -140,7 +185,7 @@ class District {
       date: date
     }
     const resp = await axios.get(url, { params: params });
-    return resp.data.getBeneficiariesGroupBy.map(c => new CVC(c.session_id, c.name, c.today, this))
+    return resp.data.getBeneficiariesGroupBy.map(c => new CVC(c.session_site_id, c.session_site_name, c.today, this))
   }
 }
 
@@ -152,6 +197,67 @@ class CVC {
     this.district = district;
   }
 
+  async getGeoCoords() {
+    const url = 'https://bhuvan-app3.nrsc.gov.in/vaccine/usrtask/app_specific/get/getnameDetails.php'
+    const params = {
+      q: this.name
+    }
+
+    // We extract out the onclick JS, which looks like this:
+    // remove_find_center();addpostpopup("Goa Medical College Bambolim",403202),zoom_to_centre(73.8584024998755,15.4643262998189,7),addmarker(15.4643262998189,73.8584024998755)
+    // This regex then extracts pin, lon and lat (in order) from it 
+    // Caveats - sometimes PIN is set to 0
+    const EXTRACTOR_REGEX = /addpostpopup\(".*",(\d+)\).*zoom_to_centre\(([0-9.]+),([0-9.]+),\d\)/;
+    const resp = await axios.get(url, { params: params })
+
+    const $ = cheerio.load(resp.data);
+    const nameJS = $('tr > td').first().attr('onclick')
+
+    if (nameJS) {
+      const match = nameJS.match(EXTRACTOR_REGEX);
+      if (match) {
+        return {
+          pinCode: match[1],
+          lon: match[2],
+          lat: match[3]
+        }
+      } else {
+        console.log("could not match!");
+        console.log(nameJS)
+      }
+    }
+
+    return null;
+
+  }
+  async getLocation() {
+    const url = 'https://bhuvan-app3.nrsc.gov.in/vaccine/usrtask/app_specific/get/getPublicDetails.php'
+    const geo = await this.getGeoCoords();
+    if (geo === null) {
+      return null;
+    }
+    const params = {
+      sno: this.name,
+      pincode: geo.pinCode
+    }
+    const resp = await axios.get(url, { params: params })
+    const $ = cheerio.load(resp.data)
+
+    const $trs = $('table tr');
+    let data = {};
+    $trs.each((_, tr) => {
+      const $tr = $(tr);
+      const key = $tr.children('td').first().text()
+      const value = $tr.children('td').last().text()
+      data[key] = value;
+    })
+
+    if (data['Address']) {
+      return { 'address': data['Address'], ...geo }
+    } else {
+      return geo
+    }
+  }
 }
 
 function getDateRange(n) {
@@ -168,11 +274,27 @@ async function getRawDistricts() {
   return (await axios.get(url)).data;
 }
 
+async function updateCVCVaccinesData(states, dates) {
+  pMap(states, async state => {
+    await state.publishCVCData(SHEET_ID, async state => state.getCVCData(dates))
+  }, { concurrency: 1 })
+}
+
+async function updateCVCLocations(states) {
+  for (const state of states) {
+    await state.publishCVCData(LOCATION_SHEET_ID, async state => await state.getCVCLocations())
+  }
+}
+
 async function main() {
   program.option(
     '--state <states...>', 'States to scrape',
   ).option(
     '--all-states', 'Scrape all states'
+  ).option(
+    // One of 'locations' or 'vaccinations'
+    // FIXME: THIS SHOULD BE a .command() instead
+    '--scraper <scraper>', 'Action to perform'
   ).parse()
 
   const opts = program.opts();
@@ -189,9 +311,14 @@ async function main() {
     states = allStates.filter(s => opts.state.indexOf(s.name) !== -1)
   }
 
-  pMap(states, async state => {
-    await state.publishCVCData(SHEET_ID, dates)
-  }, { concurrency: 4 })
+
+  if (opts.scraper === 'locations') {
+    await updateCVCLocations(states)
+  } else if (opts.scraper === 'vaccinations') {
+    await updateCVCVaccinesData(states, dates)
+  }
+
+  // return;
 }
 
 main()
