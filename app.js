@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./src/v1/routes/index');
+const devAPIs = require('./excelToMongo/routes');
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/v1', indexRouter);
+app.use('/api/dev/', devAPIs);
 
 module.exports = app;
