@@ -35,15 +35,11 @@ async function getFullDump() {
 
 }
 async function main() {
-    while (true) {
-        const filename = DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz'
-        const dump = await getFullDump();
-        console.log(`Writing ${filename}`)
-        fs.writeFileSync(filename, zlib.gzipSync(JSON.stringify(dump)));
-        console.log(`Written ${filename}`)
-        // Pause 5 minutes between runs
-        await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
-    }
+    const filename = DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz'
+    const dump = await getFullDump();
+    console.log(`Writing ${filename}`)
+    fs.writeFileSync(filename, zlib.gzipSync(JSON.stringify(dump)));
+    console.log(`Written ${filename}`)
 }
 
 main()
