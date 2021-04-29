@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
 const stateSchema = new mongoose.Schema({
     id: {
@@ -16,14 +16,14 @@ const stateSchema = new mongoose.Schema({
 stateSchema.index({ id: 1 }, { unique: true })
 
 stateSchema.methods.toJSON = function () {
-    const state = this
-    const stateObj = state.toObject()
-    delete stateObj._id
-    delete stateObj.createdAt
-    delete stateObj.updatedAt
-    return stateObj
+    const state = this;
+    const stateObj: any = state.toObject();
+    delete stateObj._id;
+    delete stateObj.createdAt;
+    delete stateObj.updatedAt;
+    return stateObj;
 }
 
 const States = mongoose.model('States', stateSchema)
 
-module.exports = States
+export default States;

@@ -1,8 +1,8 @@
 
 const cvcModel = require('../models/cvcDetails');
 
-let getStates = async function(params){
-    let findObj = {};
+export const getStates = async function(params:any){
+    let findObj: any = {};
     if(params["day"] !== undefined && params["day"] !== null){
         findObj["day"] = params["day"];
     }
@@ -10,8 +10,8 @@ let getStates = async function(params){
     return statesList;
 }
 
-let getDistrictNames = async function(params){
-    let findObj = {};
+export const getDistrictNames = async function(params:any){
+    let findObj:any = {};
     if(params["state"] !== undefined && params["state"] !== null){
         findObj["state"] = params["state"];
     }
@@ -19,8 +19,8 @@ let getDistrictNames = async function(params){
     return districtList;
 }
 
-let retrieveData = async function(params){
-    let findObj = [];
+export const getCVCInformation = async function(params:any){
+    let findObj:any = [];
     if(params["state"] !== undefined && params["state"] !== null){
         findObj.push({"state" : params["state"]});
     }
@@ -35,7 +35,3 @@ let retrieveData = async function(params){
     }
     return data;
 }
-
-exports.getCVCInformation = retrieveData;
-exports.getStates = getStates;
-exports.getDistrictNames = getDistrictNames;

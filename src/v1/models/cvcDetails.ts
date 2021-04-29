@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
 const cvcSchema = new mongoose.Schema({
     state: {
@@ -31,7 +31,7 @@ cvcSchema.index({ state: 1, district: 1, cvc:1, day:1}, { unique: true });
 
 cvcSchema.methods.toJSON = function () {
     const cvcDetails = this
-    const cvcDetailsObj = cvcDetails.toObject()
+    const cvcDetailsObj: any = cvcDetails.toObject()
     delete cvcDetailsObj._id
     delete cvcDetailsObj.createdAt
     delete cvcDetailsObj.updatedAt
@@ -39,5 +39,4 @@ cvcSchema.methods.toJSON = function () {
 }
 
 const CVCdetails = mongoose.model('cvc_details', cvcSchema)
-
-module.exports = CVCdetails;
+export default CVCdetails;
