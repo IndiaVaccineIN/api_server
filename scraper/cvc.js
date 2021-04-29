@@ -178,6 +178,9 @@ class District {
     this.state = state;
   }
 
+  /**
+   * @param {str} date Should be in yyyy-MM-dd format
+   */
   async getCVCs(date) {
     const url = 'https://api.cowin.gov.in/api/v1/reports/v2/getPublicReports';
     const params = {
@@ -186,7 +189,7 @@ class District {
       date: date
     }
     const resp = await axios.get(url, { params: params });
-    return resp.data.getBeneficiariesGroupBy.map(c => new CVC(c.session_site_id, c.session_site_name, c.today, this))
+    return resp.data.getBeneficiariesGroupBy.map(c => new CVC(c.session_site_id, c.session_site_name, c.today, this, c))
   }
 
   async getCenters(date) {
@@ -221,11 +224,12 @@ class Location {
 }
 
 class CVC {
-  constructor(id, name, today, district) {
+  constructor(id, name, today, district, rawData) {
     this.id = id;
     this.name = name;
     this.today = today;
     this.district = district;
+    this.rawData = rawData;
   }
 
   async getGeoCoords() {
