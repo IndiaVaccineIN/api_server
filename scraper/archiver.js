@@ -1,3 +1,4 @@
+const zlib = require("zlib")
 const { getAllStates } = require('./cvc');
 const { DateTime } = require('luxon');
 const pMap = require('p-map')
@@ -35,10 +36,10 @@ async function getFullDump() {
 }
 async function main() {
     while (true) {
-        const filename = DateTime.now().setZone('Asia/Kolkata').toISO() + '.json'
+        const filename = DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz'
         const dump = await getFullDump();
         console.log(`Writing ${filename}`)
-        fs.writeFileSync(filename, JSON.stringify(dump));
+        fs.writeFileSync(filename, zlib.gzipSync(JSON.stringify(dump)));
         console.log(`Written ${filename}`)
         await new Promise(resolve => setTimeout(resolve, 60 * 5));
     }
