@@ -1,56 +1,70 @@
 /*
-*  //GET call to search
-*  endpoint: url/api/v1/search/:area
-*  area = "partial zipcode or partial district name"
-*
-*  //top 5 suggestions based on input
-*  response: [ area1, area2, area3, area4, area5]
-* */
-
-
-/*
 *   //POST call to get all the CVC
 *   endpoint: url/api/v1/getCVC
 *
 *   payload: {
-*       area: "zipcode or district name",
+*       district: "district",
+*       pincode: "pincode",
 *       //for pagination
-*       page: 1,
+*       page_number: 1,
 *       page_size: 25
 *
 *       //future scope
 *       sort: { // optional
 *           distance: 1, // order in which to sort
-*           // availability: 1
+*           // vaccine_count: 1
 *       },
 *       filter: { // optional
-*           vaccines: ["Covaxin"],
+*           vaccines: ["Covaxin"], // vaccines : null
 *           radius: 10 // distance in KM or miles
-*           status: ["verified"] // statuses of the cvc center
+*           status: ["active"] // statuses of the cvc center
+*           availability: true //default true
 *       },
 *   }
 *
 *   //top 25 result based on sort, filters and page_size
-*   response:[
+*   response:{
+*       results:[
 *       {
 *           name: "cvc name",
-*           district: "district to which cvc belong"
-*           state: "state to which cvc belongs"
-*
+*           cvc_site_id: "cvc id",
+*           center_type: "central govt", // "state govt", "private"
+*           address: {
+*               locality: "locality to which cvc belong",
+*               district: "district to which cvc belong",
+*               state: "state to which cvc belongs",
+*               city: "city to which cvc belongs",
+*               pincode: "cvc pincode"
+*           },
+*           last_verified_at: "YYYY-MM-DD-HH-MM",// default "null"
+*           operation_timings:[
+*               {
+*                   shift:1
+*                   start_time: "HH-MM",
+*                   end_time: "HH-MM"
+*               },
+*           ]
 *           //future scope
-*           pincode: "cvc pincode",
+*
 *           geo: {
 *               latitude:"latitude location",
 *               longitude: "longitude location"
 *           },
-*           available: 120 // count of available vaccines,
-*           status: "verified" // status of the cvc,
-*           availability:[
+*           vaccine_count: 150 // count of available vaccines,
+*           status: "active" // "closed", "out of stock",
+*           next_stock_refresh_on: "YYYY-MM-DD" // only when status is "out of stock" otherwise null
+*           google_location: "url for google location",
+*           vaccine_type:[
 *               {
-*                   day: "2021-05-03",
-*                   count: 130 // number of slots available for 3rd may
+*                   name: "covaxin" // "covisheild",
+*                   vaccine_count: 130,
+*                   cost: int
 *               }
 *           ]
 *       }
-* ]
+*       ],
+*       total_cvc_count = 130, // number of CVC matching the criteria,
+*       current_page_number: 1,
+*       total_page_number: 20
+*   }
 * */
