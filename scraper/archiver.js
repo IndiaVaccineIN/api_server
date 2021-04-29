@@ -28,7 +28,7 @@ async function getFullDump() {
                 name: district.name,
                 centers: await district.getCenters(tomorrow)
             }
-        }, { concurrency: 6 })
+        }, { concurrency: 4 })
     }, { concurrency: CONCURRENT_STATES })
 
     return data;
@@ -41,7 +41,8 @@ async function main() {
         console.log(`Writing ${filename}`)
         fs.writeFileSync(filename, zlib.gzipSync(JSON.stringify(dump)));
         console.log(`Written ${filename}`)
-        await new Promise(resolve => setTimeout(resolve, 60 * 5));
+        // Pause 5 minutes between runs
+        await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
     }
 }
 
