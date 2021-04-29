@@ -11,7 +11,7 @@ async function getFullDump() {
     const tomorrow = DateTime.now().setZone('Asia/Kolkata').plus({ days: 1 })
     const today = DateTime.now().setZone('Asia/Kolkata')
 
-    const allStates = [(await getAllStates())[3]]
+    const allStates = await getAllStates();
 
     let slotsData = {
         date: tomorrow,
