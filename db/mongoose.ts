@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
 
 (async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URL, {
+        await mongoose.connect(process.env.MONGODB_URL!, {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
