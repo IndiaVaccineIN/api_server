@@ -19,6 +19,7 @@ const CREDS = require('./key.json');
 // Puts data in this spreadsheet https://docs.google.com/spreadsheets/d/1NR36K5nBy4rI69qU6dc5MGt2QwwTXZugDnjlWnei3X8/edit#gid=19019745
 const SHEET_ID = "1NR36K5nBy4rI69qU6dc5MGt2QwwTXZugDnjlWnei3X8"
 const LOCATION_SHEET_ID = "1iC7Ai5mATnPTHuP9eSTEWJ8GLZKLWCh5fdyVRcqblsU"
+const EIGHTEEN_SHEET = '1utlRNu58guwjK8sgN9woQClTnCS0O2J8OKD_eey2FTE'
 
 const STATE_IDS = [
   { name: "Andaman and Nicobar Islands", id: "1" },
@@ -130,13 +131,13 @@ class State {
           return
         }
         for (const cvc of cvcs) {
-          if (rows[cvc.title] === undefined) {
-            rows[cvc.title] = {
-              "CVC": cvc.title,
+          if (rows[cvc.name] === undefined) {
+            rows[cvc.name] = {
+              "CVC": cvc.name,
               "District": cvc.district.name
             }
           }
-          rows[cvc.title][date] = cvc.today
+          rows[cvc.name][date] = cvc.today
         }
 
       }, { concurrency: 7 });
@@ -150,6 +151,46 @@ class State {
     };
   }
 
+  async getEighteenData() {
+    const startDate = DateTime.now().setZone('Asia/Kolkata').plus({ days: 1 }).toFormat('dd-MM-yyyy')
+    console.log(`Starting at ${startDate}`)
+
+    const header = [
+      'District',
+      'Block Name',
+      'Center',
+      'PIN'
+    ];
+    const dates = new Set()
+
+    const rows = {}
+
+    await pMap(this.districts, async district => {
+      const centers = await district.getCenters(startDate);
+      for (const center of centers) {
+        for (const session of center.sessions) {
+          if (session.min_age_limit < 45) {
+            console.log(`Found ${center.name} with session ${JSON.stringify(session)}`)
+            if (rows[center.center_id] === undefined) {
+              rows[center.center_id] = {
+                'District': district.name,
+                'Block Name': center.block_name,
+                'Center': center.name,
+                'PIN': center.pincode
+              }
+            }
+            rows[center.center_id][session.date] = session.available_capacity
+            dates.add(session.date)
+          }
+        }
+      }
+    }, { concurrency: 7 });
+    return {
+      header: header.concat(Array.from(dates)),
+      rows: Object.values(rows).sort((a, b) => `${a.District}-${a['Block Name']}-${a.Center}`.localeCompare(`${b.District}-${b['Block Name']} - ${b.Center}}`)),
+    }
+  }
+
   async publishCVCData(sheetId, func) {
     const response = await func(this);
 
@@ -161,7 +202,7 @@ class State {
       await doc.addSheet({ title: this.name })
     }
     let sheet = doc.sheetsByTitle[this.name];
-    console.log(`Writing sheet ${this.name}`)
+    console.log(`Writing sheet ${this.name} `)
     await sheet.clear()
     await sheet.setHeaderRow(response.header);
     await sheet.addRows(response.rows);
@@ -186,6 +227,36 @@ class District {
     }
     const resp = await axios.get(url, { params: params });
     return resp.data.getBeneficiariesGroupBy.map(c => new CVC(c.session_site_id, c.session_site_name, c.today, this))
+  }
+
+  async getCenters(date) {
+    const url = 'https://api.cowin.gov.in/api/v2/appointment/sessions/calendarByDistrict'
+    const params = {
+      district_id: this.id,
+      date: date
+    }
+    let resp;
+    try {
+      resp = await axios.get(url, { params: params })
+    } catch (e) {
+      if (e.response.status !== 200) {
+        // console.log(`Got response ${ e.response.status } for ${ this.state.name } -> ${ this.name }`)
+        return []
+      }
+      throw e;
+    }
+    const data = resp.data
+    return data.centers;
+  }
+}
+
+class Location {
+  constructor(cvc, address, pin, lat, lon) {
+    this.cvc = cvc;
+    this.address = address;
+    this.pin = pin;
+    this.lat = lat;
+    this.lon = lon;
   }
 }
 
@@ -263,8 +334,8 @@ class CVC {
 function getDateRange(n) {
   const today = DateTime.now().setZone('Asia/Kolkata');
   let range = [];
-  for (let i = 0; i < n; i++) {
-    range.push(today.minus({ day: i }).toISODate())
+  for (let i = 5; i < 5 + n; i++) {
+    range.push(DateTime.now().plus({ day: i }).toFormat('dd-MM-yyyy'));
   }
   return range;
 }
@@ -281,8 +352,20 @@ async function updateCVCVaccinesData(states, dates) {
 }
 
 async function updateCVCLocations(states) {
-  for (const state of states) {
+  pMap(states, async state => {
     await state.publishCVCData(LOCATION_SHEET_ID, async state => await state.getCVCLocations())
+  }, { concurrency: 4 });
+}
+
+async function eighteen(states, days) {
+  let dates = [];
+  for (let i = 0; i < days; i++) {
+    dates.push(DateTime.now().setZone('Asia/Kolkata').plus({ days: i }).toFormat('dd-MM-yyyy'));
+  }
+
+  for (const state of states) {
+    await state.publishCVCData(EIGHTEEN_SHEET, async state => await state.getEighteenData(dates))
+
   }
 }
 
@@ -300,7 +383,7 @@ async function main() {
   const opts = program.opts();
 
   const districts = await getRawDistricts()
-  const dates = getDateRange(7);
+  const dates = getDateRange(12);
 
   const allStates = STATE_IDS.map(({ id, name }) => new State(id, name, districts.filter(d => d.state_id == id)))
   let states = []
@@ -316,9 +399,10 @@ async function main() {
     await updateCVCLocations(states)
   } else if (opts.scraper === 'vaccinations') {
     await updateCVCVaccinesData(states, dates)
+  } else if (opts.scraper == 'eighteen') {
+    await eighteen(states, 14)
   }
 
-  // return;
 }
 
 main()
