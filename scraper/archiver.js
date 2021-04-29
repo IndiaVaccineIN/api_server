@@ -28,7 +28,7 @@ async function getFullDump() {
                 name: district.name,
                 centers: await district.getCenters(tomorrow)
             }
-        }, { concurrency: 16 })
+        }, { concurrency: 6 })
     }, { concurrency: CONCURRENT_STATES })
 
     return data;
