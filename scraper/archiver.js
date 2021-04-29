@@ -4,7 +4,7 @@ const { DateTime } = require('luxon');
 const pMap = require('p-map')
 const fs = require('fs')
 
-const CONCURRENT_STATES = 4;
+const CONCURRENT_STATES = 2;
 
 async function getFullDump() {
     const tomorrow = DateTime.now().setZone('Asia/Kolkata').plus({ days: 1 }).toFormat('dd-MM-yyyy')
