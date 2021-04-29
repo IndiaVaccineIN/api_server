@@ -369,6 +369,11 @@ async function eighteen(states, days) {
   }
 }
 
+async function getAllStates() {
+  const districts = await getRawDistricts()
+  return STATE_IDS.map(({ id, name }) => new State(id, name, districts.filter(d => d.state_id == id)))
+}
+
 async function main() {
   program.option(
     '--state <states...>', 'States to scrape',
@@ -382,10 +387,9 @@ async function main() {
 
   const opts = program.opts();
 
-  const districts = await getRawDistricts()
   const dates = getDateRange(12);
 
-  const allStates = STATE_IDS.map(({ id, name }) => new State(id, name, districts.filter(d => d.state_id == id)))
+  const allStates = await getAllStates()
   let states = []
 
   if (opts.allStates) {
@@ -405,4 +409,10 @@ async function main() {
 
 }
 
-main()
+module.exports = {
+  getAllStates
+}
+
+if (require.main === module) {
+  main()
+}
