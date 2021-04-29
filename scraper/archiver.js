@@ -22,17 +22,17 @@ async function getFullDump() {
             districts: {}
         }
         await pMap(state.districts, async district => {
-            console.log(`Fetching ${state.name} -> ${district.name}`)
+            const centers = await district.getCenters(tomorrow)
+            console.log(`Found ${centers.length} in ${state.name} -> ${district.name}`)
             data.states[state.name].districts[district.name] = {
                 id: district.id,
                 name: district.name,
-                centers: await district.getCenters(tomorrow)
+                centers: centers
             }
         }, { concurrency: 4 })
     }, { concurrency: CONCURRENT_STATES })
 
     return data;
-
 }
 async function main() {
     const filename = DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz'
