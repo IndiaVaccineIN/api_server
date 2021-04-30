@@ -6,8 +6,26 @@ const pMap = require('p-map')
 const fs = require('fs');
 const path = require('path');
 const CONCURRENT_STATES = 2;
+const AWS = require('aws-sdk');
 
 
+async function publishS3(bucketName, key, body) {
+    const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+    const params = {
+        Bucket: bucketName,
+        Key: key,
+        Body: body
+    }
+    return new Promise((resolve, reject) => {
+        s3.putObject(params, (err, data) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(data)
+            }
+        })
+    })
+}
 
 async function getFullDump(locations) {
     const tomorrow = DateTime.now().setZone('Asia/Kolkata')
@@ -79,8 +97,12 @@ async function main() {
     const isroLocations = await getIsroCSVLocations(`${__dirname}/../data/isro.csv`)
     const dump = await getFullDump(isroLocations);
     for (const key of Object.keys(dump)) {
-        const filename = path.join(key, DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz');
+        const filename = path.join('raw', 'v1', key, DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz');
         console.log(`Writing ${filename}`)
+        // Publish to s3
+        await publishS3('indiavaccine-cvc', filename, zlib.gzipSync(JSON.stringify(dump[key])));
+        // Publish to Git
+        fs.mkdirSync(path.dirname(filename), { recursive: true });
         fs.writeFileSync(filename, zlib.gzipSync(JSON.stringify(dump[key])));
         console.log(`Written ${filename}`)
 
