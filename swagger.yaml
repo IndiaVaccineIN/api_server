@@ -1,0 +1,269 @@
+swagger: "2.0"
+info:
+  description: "api_server"
+  version: "0.1"
+  title: "Swagger API_SERVER"
+host: "<TBA>"
+basePath: "/"
+tags:
+  - name: "CVC"
+  - name: "volunteer"
+schemes:
+- "https"
+- "http"
+paths:
+  /api/v1/CVC:
+    post:
+      tags:
+        - "CVC"
+      summary: "search CVC"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "search"
+        schema:
+          $ref: '#/definitions/searchquery'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/cvcdata'
+        400:
+          description: Error in validations
+  /api/v1/report:
+    post:
+      tags:
+        - "volunteer"
+      summary: "api for volunteer report submission"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "report"
+        schema:
+          $ref: '#/definitions/report'
+      responses:
+        200:
+          description: ok
+  /api/v1/callRequest:
+    post:
+      tags:
+        - "volunteer"
+      summary: "api for requesting the cvc details to call"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: "body"
+          name: "report"
+          schema:
+            $ref: '#/definitions/callRequest'
+      responses:
+        200:
+          description: ok
+  
+definitions:
+  searchquery:
+    type: object
+    properties:
+      district:
+        description: "name of the district"
+        type: "string"
+      pincode:
+        description: "pincode of the district"
+        type: "integer"
+      pageNumber:
+        description: "page number"
+        type: "integer"
+        default: 1
+      pageSize:
+        description: "page number"
+        type: "integer"
+        default: 25
+      sort:
+        type: object
+        properties:
+          distance:
+            type: integer
+            default: 1
+      filter:
+        type: object
+        properties:
+          vaccines:
+            type: array
+            items:
+              type: string
+          radius:
+            type: integer
+            default: 30
+          status:
+            type: array
+            items:
+              type: string
+          availability:
+            type: boolean
+  cvcdata:
+    type: object
+    properties:
+      totalCVCcount:
+        type: "integer"
+      currentPageNumber:
+        type: "integer"
+      totalPageNumbers:
+        type: "integer"
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            cvcSiteId:
+              type: string
+            centerType:
+              type: string
+            address:
+              type: object
+              properties:
+                locality:
+                  type: string
+                district:
+                  type: string
+                state:
+                  type: string
+                city:
+                  type: string
+                pincode:
+                  type: integer
+                  minimum: 100000
+                  maximum: 999999
+            lastVerifiedAt:
+              type: string
+              format: date-time
+              default: null
+            operationTimings:
+              type: array
+              items:
+                type: object
+                properties:
+                  shift:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: partial-time
+                  endTime:
+                    type: string
+                    format: partial-time
+            geo:
+              type: object
+              properties:
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+            vaccinesCount:
+              type: integer
+            status:
+              type: string
+            nextStockOn:
+              type: string
+              format: date
+            googleLocation:
+              type: string
+              format: uri
+            vaccineTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  vaccineCount:
+                    type: integer
+                  cost:
+                    type: number
+                    format: float
+  report:
+    type: object
+    properties:
+      cvcId:
+        type: string
+        description: "the ID of one of CVC"
+      callResponse:
+        type: string
+        description: "call-responded, not-responded, wrong-number"
+      cvcStatus:
+        type: string
+        description: "closed/active/outofstock"
+      cvcType:
+        type: string
+        description: "central/state/private"
+      vaccinesOffered:
+        type: array
+        description: "the list of vaccines offered by the center"
+        items:
+          type: object
+          description: ""
+          properties:
+            name:
+              type: string
+            count:
+              type: integer
+            cost:
+              type: integer
+              description: "cost in INR"
+      address:
+        type: object
+        description: "address of the CVC"
+        properties:
+          locality:
+            type: string
+          district:
+            type: string
+          state:
+            type: string
+          city:
+            type: string
+          pinCode:
+            type: integer
+      operationTimings:
+        type: array
+        description: ""
+        items:
+          type: object
+          description: ""
+          properties:
+            shift:
+              type: integer
+              default: 1
+            startTime:
+              type: string
+              description: "this should be ISO standard timestamp"
+            endTime:
+              type: string
+              description: "this should be ISO standard timestamp"
+      nextStockRefreshOn:
+        type: string
+        description: "this should be ISO standard timestamp"
+      verificationTime:
+        type: string
+  callRequest:
+    type: object
+    properties:
+      pincode:
+        description: "pincode of the district"
+        type: "integer"
+      cvcId:
+        description: "pincode of the district"
+        type: "string"
+      claim:
+        description: "if set tp true, will lock the cvc for 20 minutes"
+        type: "boolean"
+        default: false
