@@ -203,7 +203,7 @@ class District {
       resp = await axios.get(url, { params: params })
     } catch (e) {
       if (e.response.status !== 200) {
-        // console.log(`Got response ${ e.response.status } for ${ this.state.name } -> ${ this.name }`)
+        console.log(`Got response ${e.response.status} for ${this.state.name} -> ${this.name}`)
         return []
       }
       throw e;
