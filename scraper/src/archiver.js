@@ -1,5 +1,6 @@
 const zlib = require("zlib")
 const { getAllStates } = require('./state');
+const { getIsroLocations } = require('./isro')
 const { DateTime } = require('luxon');
 const pMap = require('p-map')
 const fs = require('fs');
@@ -7,7 +8,9 @@ const path = require('path');
 
 const CONCURRENT_STATES = 2;
 
-async function getFullDump() {
+
+
+async function getFullDump(locations) {
     const tomorrow = DateTime.now().setZone('Asia/Kolkata')
     const today = DateTime.now().setZone('Asia/Kolkata')
 
@@ -45,7 +48,19 @@ async function getFullDump() {
             console.log(`Found ${cvcs.length} current vaccination sites in ${state.name} -> ${district.name}`)
             const augmentedCVCs = await pMap(cvcs, async cvc => {
                 const rawData = cvc.rawData;
-                rawData.address = await cvc.getLocation()
+                if (locations[cvc.name.toLowerCase()]) {
+                    rawData.address = locations[cvc.name.toLowerCase()]
+                    console.log(`Found local location for ${state.name} -> ${district.name} -> ${cvc.name}`)
+                } else {
+                    console.log(`Fetching remote location for ${state.name} -> ${district.name} -> ${cvc.name}`)
+                    rawData.address = await cvc.getLocation()
+                    if (rawData.address) {
+                        console.log(`Found remote location for ${state.name} -> ${district.name} -> ${cvc.name}`)
+                    } else {
+                        console.log(`Did not find remote location for ${state.name} -> ${district.name} -> ${cvc.name}`)
+
+                    }
+                }
                 return rawData
             }, { concurency: 4 })
             vaccinationsData[state.name].districts[district.name] = {
@@ -62,7 +77,8 @@ async function getFullDump() {
     };
 }
 async function main() {
-    const dump = await getFullDump();
+    const isroLocations = await getIsroLocations(`${__dirname}/../data/isro.rss`)
+    const dump = await getFullDump(isroLocations);
     for (const key of Object.keys(dump)) {
         const filename = path.join(key, DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz');
         console.log(`Writing ${filename}`)
