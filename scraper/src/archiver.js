@@ -33,7 +33,7 @@ async function getFullDump(locations) {
             districts: {}
         }
 
-        vaccinationsData[state.name] = { ...slotsData.states[state.name] }
+        vaccinationsData.states[state.name] = { ...slotsData.states[state.name] }
 
         await pMap(state.districts, async district => {
             const centers = await district.getCenters(tomorrow)
@@ -63,7 +63,7 @@ async function getFullDump(locations) {
                 }
                 return rawData
             }, { concurency: 4 })
-            vaccinationsData[state.name].districts[district.name] = {
+            vaccinationsData.states[state.name].districts[district.name] = {
                 id: district.id,
                 name: district.name,
                 cvcs: augmentedCVCs
