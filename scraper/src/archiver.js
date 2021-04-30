@@ -120,7 +120,7 @@ async function main() {
     );
     if (key === "vaccinationsData") {
       const mappedFilename = path.join(
-        "raw",
+        "processed",
         "v1",
         key,
         "mapped_cvc_data.json.gz"
