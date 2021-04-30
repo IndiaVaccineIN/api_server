@@ -57,5 +57,3 @@ export const dumpExcelDataToMongo = async function(){
         logger.error({"err_name": "FAILED_TO_STORE", "err_stk": err.stack});
     }
 }
-
-exports.writeDataToMongo = writeDataToMongo;
