@@ -3,9 +3,18 @@
 const RSSParser = require('rss-parser');
 const fs = require('fs')
 const cheerio = require('cheerio')
+const parseCSV = require("csv-parse/lib/sync");
 
+async function getIsroCSVLocations(csvFilePath) {
 
-async function getIsroLocations(rssFilePath) {
+    const records = parseCSV(fs.readFileSync(csvFilePath), { columns: true })
+    return records.reduce((map, r) => {
+        map[r.name.toLowerCase()] = r;
+        return map
+    }, {})
+}
+
+async function getIsroRSSLocations(rssFilePath) {
     const rssParser = new RSSParser()
     const feed = await rssParser.parseString(fs.readFileSync(rssFilePath))
     let locations = {}
@@ -28,5 +37,6 @@ async function getIsroLocations(rssFilePath) {
 }
 
 module.exports = {
-    getIsroLocations
+    getIsroRSSLocations,
+    getIsroCSVLocations
 }

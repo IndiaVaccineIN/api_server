@@ -1,11 +1,10 @@
 const zlib = require("zlib")
 const { getAllStates } = require('./state');
-const { getIsroLocations } = require('./isro')
+const { getIsroCSVLocations } = require('./isro')
 const { DateTime } = require('luxon');
 const pMap = require('p-map')
 const fs = require('fs');
 const path = require('path');
-
 const CONCURRENT_STATES = 2;
 
 
@@ -77,7 +76,7 @@ async function getFullDump(locations) {
     };
 }
 async function main() {
-    const isroLocations = await getIsroLocations(`${__dirname}/../data/isro.rss`)
+    const isroLocations = await getIsroCSVLocations(`${__dirname}/../data/isro.csv`)
     const dump = await getFullDump(isroLocations);
     for (const key of Object.keys(dump)) {
         const filename = path.join(key, DateTime.now().setZone('Asia/Kolkata').toISO() + '.json.gz');
