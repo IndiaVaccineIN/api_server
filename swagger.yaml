@@ -1,4 +1,3 @@
----
 swagger: "2.0"
 info:
   description: "This is a sample server Petstore server.  You can find out more about\
@@ -17,6 +16,7 @@ host: "petstore.swagger.io"
 basePath: "/v2"
 tags:
   - name: "CVC"
+  - name: "volunteer"
 schemes:
 - "https"
 - "http"
@@ -43,6 +43,23 @@ paths:
             $ref: '#/definitions/cvcdata'
         400:
           description: Error in validations
+  /api/v1/report:
+    post:
+      tags:
+        - "volunteer"
+      summary: "api for volunteer report submission"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "report"
+        schema:
+          $ref: '#/definitions/report'
+      responses:
+        200:
+          description: ok
   
 definitions:
   searchquery:
@@ -165,3 +182,67 @@ definitions:
                   cost:
                     type: number
                     format: float
+  report:
+    type: object
+    properties:
+      cvcId:
+        type: string
+        description: "the ID of one of CVC"
+      callResponse:
+        type: string
+        description: "call-responded, not-responded, wrong-number"
+      cvcStatus:
+        type: string
+        description: "closed/active/outofstock"
+      cvcType:
+        type: string
+        description: "central/state/private"
+      vaccinesOffered:
+        type: array
+        description: "the list of vaccines offered by the center"
+        items:
+          type: object
+          description: ""
+          properties:
+            name:
+              type: string
+            count:
+              type: integer
+            cost:
+              type: integer
+              description: "cost in INR"
+      address:
+        type: object
+        description: "address of the CVC"
+        properties:
+          locality:
+            type: string
+          district:
+            type: string
+          state:
+            type: string
+          city:
+            type: string
+          pinCode:
+            type: integer
+      operationTimings:
+        type: array
+        description: ""
+        items:
+          type: object
+          description: ""
+          properties:
+            shift:
+              type: integer
+              default: 1
+            startTime:
+              type: string
+              description: "this should be ISO standard timestamp"
+            endTime:
+              type: string
+              description: "this should be ISO standard timestamp"
+      nextStockRefreshOn:
+        type: string
+        description: "this should be ISO standard timestamp"
+      verificationTime:
+        type: string
