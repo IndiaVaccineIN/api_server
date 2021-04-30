@@ -37,9 +37,13 @@ paths:
         schema:
           $ref: '#/definitions/searchquery'
       responses:
-         200:
-           description: OK
-          
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/cvcdata'
+        400:
+          description: Error in validations
+  
 definitions:
   searchquery:
     type: object
@@ -80,3 +84,84 @@ definitions:
               type: string
           availability:
             type: boolean
+  cvcdata:
+    type: object
+    properties:
+      totalCVCcount:
+        type: "integer"
+      currentPageNumber:
+        type: "integer"
+      totalPageNumbers:
+        type: "integer"
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            cvcSiteId:
+              type: string
+            centerType:
+              type: string
+            address:
+              type: object
+              properties:
+                locality:
+                  type: string
+                district:
+                  type: string
+                state:
+                  type: string
+                city:
+                  type: string
+                pincode:
+                  type: integer
+                  minimum: 100000
+                  maximum: 999999
+            lastVerifiedAt:
+              type: string
+              format: date-time
+              default: null
+            operationTimings:
+              type: array
+              items:
+                type: object
+                properties:
+                  shift:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: partial-time
+                  endTime:
+                    type: string
+                    format: partial-time
+            geo:
+              type: object
+              properties:
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+            vaccinesCount:
+              type: integer
+            status:
+              type: string
+            nextStockOn:
+              type: string
+              format: date
+            googleLocation:
+              type: string
+              format: uri
+            vaccineTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  vaccineCount:
+                    type: integer
+                  cost:
+                    type: number
+                    format: float
