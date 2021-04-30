@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 
-(async () => {
+export const createMongoConnections = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URL!, {
             useNewUrlParser: true,
@@ -15,4 +15,4 @@ import mongoose from 'mongoose';
         console.log(new Date(), "\DB Connection: ERROR")
         console.log(error);
     }
-})();
+};

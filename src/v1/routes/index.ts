@@ -1,6 +1,6 @@
 import express from 'express';
-const {dumpExcelDataToMongo, writeDataToMongo} = require('../controllers/writeToMongo');
-const {getCVCInformation,getStates, getDistrictNames} = require('../controllers/retrieveCVCInfo');
+import {dumpExcelDataToMongo, writeDataToMongo} from '../controllers/writeToMongo';
+import {getCVCInformation,getStates, getDistrictNames} from '../controllers/retrieveCVCInfo';
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.post('/writeDataToMongo', function (req, res, next) {
 /* Read Data from Excel and Dump it to Mongo*/
 router.get('/dumpExcelToMongo', function (req, res, next) {
     dumpExcelDataToMongo().then((response: any) =>{
-        res.send('Return Data Population Done');
+        res.send('Return Data Population Done'+ response);
     }, (err: any) => {
         res.status(500);
     })

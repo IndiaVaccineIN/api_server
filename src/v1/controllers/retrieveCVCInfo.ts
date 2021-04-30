@@ -1,5 +1,5 @@
 
-const cvcModel = require('../models/cvcDetails');
+import cvcModel from '../models/cvcDetails';
 
 export const getStates = async function(params:any){
     let findObj: any = {};
