@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-(async () => {
+
+export const createMongoConnections = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URL, {
+        await mongoose.connect(process.env.MONGODB_URL!, {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
@@ -14,4 +15,4 @@ const mongoose = require('mongoose');
         console.log(new Date(), "\DB Connection: ERROR")
         console.log(error);
     }
-})();
+};

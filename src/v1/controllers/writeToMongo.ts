@@ -1,21 +1,29 @@
-const reader = require('xlsx');
-const moment = require('moment');
-const cvcModel = require('../models/cvcDetails');
-const logger = require('../../../logger');
-const clone = require('clone');
+import reader from 'xlsx';
+import moment from 'moment';
+import cvcModel from '../models/cvcDetails';
+import logger from '../../../logger';
+import clone from 'clone';
 const BULK_SIZE = 2000;
 const dayFormat = "YYYY-MM-DD";
 
-let writeDataToMongo = async function({data, keyList, dayList, state}){
+interface MongoWriteReq {
+    data: any
+    keyList?: string[]
+    dayList?: string[]
+    state?: string
+}
+
+
+export const writeDataToMongo = async function({data, keyList , dayList, state}: MongoWriteReq){
     try {
         let dayKeys = clone(dayList);
         keyList = keyList || ["District", "CVC"];
-        let bulkOps = [], count = 0;
+        let bulkOps: any[] = [], count = 0;
         for (let row of data) {
             dayKeys = dayList || Object.keys(row).filter(key => moment(key, dayFormat, true).isValid());
-            let baseDoc = {state};
+            let baseDoc:any = {state};
             keyList.forEach(key => baseDoc[key.toLowerCase()] = row[key] || "NA");
-            dayKeys.forEach(day => bulkOps.push({
+            dayKeys.forEach((day: string) => bulkOps.push({
                 updateOne: {
                     filter: Object.assign({day}, baseDoc),
                     update: {$set: {value: row[day] || 0}}, upsert: true
@@ -36,12 +44,13 @@ let writeDataToMongo = async function({data, keyList, dayList, state}){
     }
 }
 
-let dumpExcelDataToMongo = async function(){
+export const dumpExcelDataToMongo = async function(){
     try {
-        const file = reader.readFile(__dirname + '../../../data/CVCdata.xlsx');
-        const sheets = file.SheetNames;
+        const file = reader.readFile(__dirname + '/../../../data/CVCdata.xlsx');
+        const sheets: string[] = file.SheetNames;
         for (let state of sheets) {
-            const data = reader.utils.sheet_to_json(file.Sheets[state]);
+            logger.info({state});
+            const data: any = reader.utils.sheet_to_json(file.Sheets[state]);
             await writeDataToMongo({data, state});
         }
         logger.info("Data dump finished");
@@ -49,6 +58,3 @@ let dumpExcelDataToMongo = async function(){
         logger.error({"err_name": "FAILED_TO_STORE", "err_stk": err.stack});
     }
 }
-
-exports.writeDataToMongo = writeDataToMongo;
-exports.dumpExcelDataToMongo = dumpExcelDataToMongo;

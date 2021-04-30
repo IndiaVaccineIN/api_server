@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 /* GET Districts. */
@@ -10,4 +10,4 @@ router.get('/:districtID', function (req, res, next) {
     res.send('Return Districts by ID');
 })
 
-module.exports = router;
+export default router;
