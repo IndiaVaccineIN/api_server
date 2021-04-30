@@ -30,7 +30,7 @@ async function getFullDump() {
             districts: {}
         }
 
-        vaccinationsData[state.name] = slotsData.states[state.name]
+        vaccinationsData[state.name] = { ...slotsData.states[state.name] }
 
         await pMap(state.districts, async district => {
             const centers = await district.getCenters(tomorrow)
