@@ -143,7 +143,7 @@ async function main() {
     await publishS3(
       "indiavaccine-cvc",
       mappedFilename,
-      zlib.gzipSync(JSON.stringify(dump.vaccinations))
+      zlib.gzipSync(JSON.stringify(transform(dump.vaccinations)))
     );
   }
 }
