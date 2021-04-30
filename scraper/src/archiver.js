@@ -118,21 +118,6 @@ async function main() {
       key,
       DateTime.now().setZone("Asia/Kolkata").toISO() + ".json.gz"
     );
-    if (key === "vaccinationsData") {
-      const mappedFilename = path.join(
-        "processed",
-        "v1",
-        key,
-        "mapped_cvc_data.json.gz"
-      );
-      console.log(`Writing ${filename}`);
-      // Publish transformed file to s3
-      await publishS3(
-        "indiavaccine-cvc",
-        mappedFilename,
-        zlib.gzipSync(JSON.stringify(transform(dump[key])))
-      );
-    }
     console.log(`Writing ${filename}`);
     // Publish to s3
     await publishS3(
@@ -145,6 +130,21 @@ async function main() {
     fs.writeFileSync(filename, zlib.gzipSync(JSON.stringify(dump[key])));
     console.log(`Written ${filename}`);
   }
+
+  if (dump.vaccinations) {
+    // Run transformer and post that to s3
+    const mappedFilename = path.join(
+        "processed", "v1", key,
+        "mapped_cvc_data.json.gz"
+    );
+    console.log(`Writing transformed ${filename}`);
+    // Publish transformed file to s3
+    await publishS3(
+        "indiavaccine-cvc",
+        mappedFilename,
+        zlib.gzipSync(JSON.stringify(dump.vaccinations))
+    );
+}
 }
 
 main();
