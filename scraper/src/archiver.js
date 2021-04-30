@@ -69,14 +69,8 @@ async function getFullDump(locations) {
                     rawData.address = locations[cvc.name.toLowerCase()]
                     console.log(`Found local location for ${state.name} -> ${district.name} -> ${cvc.name}`)
                 } else {
-                    console.log(`Fetching remote location for ${state.name} -> ${district.name} -> ${cvc.name}`)
-                    rawData.address = await cvc.getLocation()
-                    if (rawData.address) {
-                        console.log(`Found remote location for ${state.name} -> ${district.name} -> ${cvc.name}`)
-                    } else {
-                        console.log(`Did not find remote location for ${state.name} -> ${district.name} -> ${cvc.name}`)
+                    console.log(`Did not find location for ${state.name} -> ${district.name} -> ${cvc.name}`)
 
-                    }
                 }
                 return rawData
             }, { concurency: 4 })
