@@ -1,14 +1,15 @@
-const express = require('express');
+import express from 'express';
+import {dumpExcelDataToMongo, writeDataToMongo} from '../controllers/writeToMongo';
+import {getCVCInformation,getStates, getDistrictNames} from '../controllers/retrieveCVCInfo';
+
 const router = express.Router();
-const {dumpExcelDataToMongo, writeDataToMongo} = require('../controllers/writeToMongo');
-const {getCVCInformation,getStates, getDistrictNames} = require('../controllers/retrieveCVCInfo');
 
 /* Write Data to Mongo*/
 router.post('/writeDataToMongo', function (req, res, next) {
     let params = req.body;
-    writeDataToMongo(params).then(response =>{
+    writeDataToMongo(params).then((response: any) => {
         res.send('Return Data Population Done');
-    }, err =>{
+    }, (err: any) => {
         res.status(500);
     })
 
@@ -16,9 +17,9 @@ router.post('/writeDataToMongo', function (req, res, next) {
 
 /* Read Data from Excel and Dump it to Mongo*/
 router.get('/dumpExcelToMongo', function (req, res, next) {
-    dumpExcelDataToMongo().then(response =>{
-        res.send('Return Data Population Done');
-    }, err =>{
+    dumpExcelDataToMongo().then((response: any) =>{
+        res.send('Return Data Population Done'+ response);
+    }, (err: any) => {
         res.status(500);
     })
 
@@ -27,20 +28,20 @@ router.get('/dumpExcelToMongo', function (req, res, next) {
 
 router.get('/retrieveCVC/:state/:district', function(req, res, next){
     let params = req.params;
-    getCVCInformation(params).then(function(result){
+    getCVCInformation(params).then(function(result: any){
         res.send(result);
         res.status(200);
-    }, function(err){
+    }, function(err: any){
         res.status(500);
     })
 });
 
 router.get('/getStates', function(req, res, next){
     let params = req.body;
-    getStates(params).then(function(result){
+    getStates(params).then(function(result: any) {
         res.send(result);
         res.status(200);
-    }, function(err){
+    }, function(err: any){
         res.status(500);
     });
 
@@ -48,13 +49,12 @@ router.get('/getStates', function(req, res, next){
 
 router.get('/getDistricts/:state', function(req, res, next){
     let params = req.params;
-    getDistrictNames(params).then(function(result){
+    getDistrictNames(params).then(function(result: any){
         res.send(result);
         res.status(200);
-    }, function(err){
+    }, function(err: any){
         res.status(500);
     });
-
 });
 
-module.exports = router;
+export default router;

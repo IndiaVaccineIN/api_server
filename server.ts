@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 
-const app = require('./app');
-const debug = require('debug')('api-server:server');
-const http = require('http');
+import app from './app';
+import http from'http';
+import logger from './logger';
 
 /**
  * Get port from environment and store in Express.
@@ -33,7 +33,7 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort(val: string) {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -53,7 +53,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error: any) {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -83,8 +83,12 @@ function onError(error) {
 
 function onListening() {
   const addr = server.address();
+  if (!addr) {
+    logger.error({"err_name":"Could not find address"});
+    return;
+  }
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  logger.info('Listening on ' + bind);
 }
