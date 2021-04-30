@@ -1,8 +1,8 @@
-const reader = require('xlsx');
-const moment = require('moment');
-const cvcModel = require('../models/cvcDetails');
-const logger = require('../../../logger');
-const clone = require('clone');
+import reader from 'xlsx';
+import moment from 'moment';
+import cvcModel from '../models/cvcDetails';
+import logger from '../../../logger';
+import clone from 'clone';
 const BULK_SIZE = 2000;
 const dayFormat = "YYYY-MM-DD";
 
@@ -46,9 +46,10 @@ export const writeDataToMongo = async function({data, keyList , dayList, state}:
 
 export const dumpExcelDataToMongo = async function(){
     try {
-        const file = reader.readFile(__dirname + '../../../data/CVCdata.xlsx');
+        const file = reader.readFile(__dirname + '/../../../data/CVCdata.xlsx');
         const sheets: string[] = file.SheetNames;
         for (let state of sheets) {
+            logger.info({state});
             const data: any = reader.utils.sheet_to_json(file.Sheets[state]);
             await writeDataToMongo({data, state});
         }

@@ -1,5 +1,5 @@
-const express = require('express');
-const States = require('../models/states')
+import express from 'express';
+import States from '../models/states';
 const router = express.Router();
 
 /* GET States. */

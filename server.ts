@@ -5,8 +5,8 @@
  */
 
 import app from './app';
-const debug = require('debug')('api-server:server');
-const http = require('http');
+import http from'http';
+import logger from './logger';
 
 /**
  * Get port from environment and store in Express.
@@ -83,8 +83,12 @@ function onError(error: any) {
 
 function onListening() {
   const addr = server.address();
+  if (!addr) {
+    logger.error({"err_name":"Could not find address"});
+    return;
+  }
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  logger.info('Listening on ' + bind);
 }
