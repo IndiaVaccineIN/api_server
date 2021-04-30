@@ -15,15 +15,6 @@ const SHEET_ID = "1NR36K5nBy4rI69qU6dc5MGt2QwwTXZugDnjlWnei3X8"
 const LOCATION_SHEET_ID = "1iC7Ai5mATnPTHuP9eSTEWJ8GLZKLWCh5fdyVRcqblsU"
 const EIGHTEEN_SHEET = '1utlRNu58guwjK8sgN9woQClTnCS0O2J8OKD_eey2FTE'
 
-function getDateRange(n) {
-  let range = [];
-  for (let i = 5; i < 5 + n; i++) {
-    range.push(DateTime.now().plus({ day: i }));
-  }
-  return range;
-}
-
-
 async function updateCVCVaccinesData(states, days) {
   let dates = [];
   for (let i = 1; i < days; i++) {
