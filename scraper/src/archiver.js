@@ -43,10 +43,15 @@ async function getFullDump() {
 
             const cvcs = await district.getCVCs(today);
             console.log(`Found ${cvcs.length} current vaccination sites in ${state.name} -> ${district.name}`)
+            const augmentedCVCs = await pMap(cvcs, async cvc => {
+                const rawData = cvc.rawData;
+                rawData.address = await cvc.getLocation()
+                return rawData
+            }, { concurency: 4 })
             vaccinationsData[state.name].districts[district.name] = {
                 id: district.id,
                 name: district.name,
-                cvcs: cvcs.map(c => c.rawData)
+                cvcs: augmentedCVCs
             }
         }, { concurrency: 4 })
     }, { concurrency: CONCURRENT_STATES })
