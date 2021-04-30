@@ -1,5 +1,5 @@
 const zlib = require("zlib")
-const { getAllStates } = require('./cvc');
+const { getAllStates } = require('./state');
 const { DateTime } = require('luxon');
 const pMap = require('p-map')
 const fs = require('fs');
@@ -8,7 +8,7 @@ const path = require('path');
 const CONCURRENT_STATES = 2;
 
 async function getFullDump() {
-    const tomorrow = DateTime.now().setZone('Asia/Kolkata').plus({ days: 1 })
+    const tomorrow = DateTime.now().setZone('Asia/Kolkata')
     const today = DateTime.now().setZone('Asia/Kolkata')
 
     const allStates = await getAllStates();
@@ -33,7 +33,7 @@ async function getFullDump() {
         vaccinationsData[state.name] = slotsData.states[state.name]
 
         await pMap(state.districts, async district => {
-            const centers = await district.getCenters(tomorrow.toFormat('dd-MM-yyyy'))
+            const centers = await district.getCenters(tomorrow)
             console.log(`Found ${centers.length} future slot centers in ${state.name} -> ${district.name}`)
             slotsData.states[state.name].districts[district.name] = {
                 id: district.id,
@@ -41,7 +41,7 @@ async function getFullDump() {
                 centers: centers
             }
 
-            const cvcs = await district.getCVCs(today.toFormat('yyyy-MM-dd'));
+            const cvcs = await district.getCVCs(today);
             console.log(`Found ${cvcs.length} current vaccination sites in ${state.name} -> ${district.name}`)
             vaccinationsData[state.name].districts[district.name] = {
                 id: district.id,
