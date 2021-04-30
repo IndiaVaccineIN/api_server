@@ -134,17 +134,18 @@ async function main() {
   if (dump.vaccinations) {
     // Run transformer and post that to s3
     const mappedFilename = path.join(
-        "processed", "v1", key,
-        "mapped_cvc_data.json.gz"
+      "processed",
+      "v1",
+      "mapped_cvc_data.json.gz"
     );
-    console.log(`Writing transformed ${filename}`);
+    console.log(`Writing transformed ${mappedFilename}`);
     // Publish transformed file to s3
     await publishS3(
-        "indiavaccine-cvc",
-        mappedFilename,
-        zlib.gzipSync(JSON.stringify(dump.vaccinations))
+      "indiavaccine-cvc",
+      mappedFilename,
+      zlib.gzipSync(JSON.stringify(dump.vaccinations))
     );
-}
+  }
 }
 
 main();
