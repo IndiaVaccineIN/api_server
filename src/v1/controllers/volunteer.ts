@@ -5,7 +5,7 @@ import {
   CVCStatusEnum,
   CVCTypeEnum,
   Vaccine,
-} from './cvc';
+} from '../schema/cvc';
 
 export interface CallRequest {
   pincode?: number;
