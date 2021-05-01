@@ -23,10 +23,6 @@ export interface IsroLocationInterface {
   city?: string;
 }
 
-type IsroLocationKeys<Type> = {
-  [Property in keyof Type]: string;
-};
-
 export async function getIsroCSVLocations(
   csvFilePath: fs.PathLike
 ): Promise<Record<string, IsroLocationInterface>> {
