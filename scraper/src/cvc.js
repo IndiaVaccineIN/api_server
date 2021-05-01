@@ -2,10 +2,10 @@
  * Scrapes dashboard.cowin.gov.in via its API and produces local
  * data files in JSON & CSV, modeled around vaccination sites
  */
-const axios = require('axios');
+import axios from 'axios';
 
-const cheerio = require('cheerio');
-const axiosRetry = require('axios-retry');
+import cheerio from 'cheerio';
+import axiosRetry from 'axios-retry';
 // Exponential back-off retry delay between requests, to handle server issues
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 
