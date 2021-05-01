@@ -10,7 +10,7 @@ COPY package-lock.json ./
 RUN npm install
 COPY . .
 
-RUN npm build
+RUN npm run compile
 
 RUN chown -R node:node /app
 USER node

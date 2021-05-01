@@ -1,0 +1,60 @@
+import {Route, Tags, Post, Body} from 'tsoa';
+import {
+  CVCRequest,
+  PaginatedCVCData,
+  CVCTypeEnum,
+  CVCStatusEnum,
+  VaccineTypeEnum,
+} from '../schema/cvc';
+
+@Tags('CVC')
+@Route('/api/v1/cvc')
+export class CVCController {
+  @Post('/')
+  public async search(@Body() req: CVCRequest): Promise<PaginatedCVCData> {
+    return {
+      results: [
+        {
+          name: 'cvc name',
+          cvc_site_id: 'cvc id',
+          type: CVCTypeEnum.CENTRAL,
+          address: {
+            locality: 'locality to which cvc belong',
+            district: req.district || 'district to which cvc belong',
+            state: 'state to which cvc belongs',
+            city: 'city to which cvc belongs',
+            pincode: 560078,
+          },
+          last_verified_at: new Date(), // default "null"
+          operation_timings: [
+            {
+              shift: 1,
+              start_time: 'HH-MM',
+              end_time: 'HH-MM',
+            },
+          ],
+          //future scope
+          geo: {
+            latitude: 'latitude location',
+            longitude: 'longitude location',
+          },
+          vaccine_count: 150,
+          status: CVCStatusEnum.ACTIVE,
+          next_stock_refresh_on: new Date(),
+          google_maps_url: 'url for google location',
+          vaccines: [
+            {
+              name: 'covaxin',
+              type: VaccineTypeEnum.COVAXIN,
+              count: 130,
+              cost: 250,
+            },
+          ],
+        },
+      ],
+      total: 130, // number of CVC matching the criteria,
+      page_number: 1,
+      page_size: 20,
+    };
+  }
+}

@@ -6,27 +6,349 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"PingResponse": {
+			"CVCTypeEnum": {
+				"enum": [
+					"CENTRAL",
+					"STATE",
+					"PRIVATE"
+				],
+				"type": "string"
+			},
+			"CVCSiteAddress": {
 				"properties": {
-					"message": {
+					"locality": {
 						"type": "string"
+					},
+					"district": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"pincode": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
-					"message"
+					"locality",
+					"district",
+					"state",
+					"city",
+					"pincode"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PingRequest": {
+			"CVCOperationShift": {
 				"properties": {
-					"hello": {
+					"shift": {
+						"type": "number",
+						"format": "double"
+					},
+					"start_time": {
+						"type": "string",
+						"description": "Format: HH:MM"
+					},
+					"end_time": {
+						"type": "string",
+						"description": "Format: HH:MM"
+					}
+				},
+				"required": [
+					"shift",
+					"start_time",
+					"end_time"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GeoPoint": {
+				"properties": {
+					"latitude": {
+						"type": "string"
+					},
+					"longitude": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"hello"
+					"latitude",
+					"longitude"
 				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CVCStatusEnum": {
+				"enum": [
+					"ACTIVE",
+					"CLOSED",
+					"OUT_OF_STOCK"
+				],
+				"type": "string"
+			},
+			"VaccineTypeEnum": {
+				"enum": [
+					"COVAXIN",
+					"COVISHIELD"
+				],
+				"type": "string"
+			},
+			"Vaccine": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/VaccineTypeEnum"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					},
+					"cost": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"type",
+					"count",
+					"cost"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CVCData": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"cvc_site_id": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/CVCTypeEnum"
+					},
+					"address": {
+						"$ref": "#/components/schemas/CVCSiteAddress"
+					},
+					"last_verified_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"operation_timings": {
+						"items": {
+							"$ref": "#/components/schemas/CVCOperationShift"
+						},
+						"type": "array"
+					},
+					"geo": {
+						"$ref": "#/components/schemas/GeoPoint"
+					},
+					"vaccine_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/CVCStatusEnum"
+					},
+					"next_stock_refresh_on": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"google_maps_url": {
+						"type": "string"
+					},
+					"vaccines": {
+						"items": {
+							"$ref": "#/components/schemas/Vaccine"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"name",
+					"cvc_site_id",
+					"type",
+					"address",
+					"last_verified_at",
+					"operation_timings",
+					"geo",
+					"vaccine_count",
+					"status",
+					"google_maps_url",
+					"vaccines"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginatedCVCData": {
+				"properties": {
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page_number": {
+						"type": "number",
+						"format": "double"
+					},
+					"page_size": {
+						"type": "number",
+						"format": "double"
+					},
+					"results": {
+						"items": {
+							"$ref": "#/components/schemas/CVCData"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"total",
+					"page_number",
+					"page_size",
+					"results"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SortOrderEnum": {
+				"enum": [
+					"ASC",
+					"DESC"
+				],
+				"type": "string"
+			},
+			"CVCRequest": {
+				"properties": {
+					"district": {
+						"type": "string",
+						"description": "Name of the district.\nEither this or pincode is required"
+					},
+					"pincode": {
+						"type": "number",
+						"format": "double",
+						"description": "Pincode to search with.\nEither this or district is required"
+					},
+					"page_number": {
+						"type": "number",
+						"format": "double",
+						"default": "1"
+					},
+					"page_size": {
+						"type": "number",
+						"format": "double",
+						"default": "25"
+					},
+					"sort": {
+						"properties": {
+							"distance": {
+								"$ref": "#/components/schemas/SortOrderEnum"
+							}
+						},
+						"required": [
+							"distance"
+						],
+						"type": "object"
+					},
+					"filter": {
+						"properties": {
+							"availability": {
+								"type": "boolean",
+								"default": "true"
+							},
+							"status": {
+								"items": {
+									"$ref": "#/components/schemas/CVCStatusEnum"
+								},
+								"type": "array"
+							},
+							"radius": {
+								"type": "number",
+								"format": "double",
+								"default": "30"
+							},
+							"vaccines": {
+								"items": {
+									"$ref": "#/components/schemas/VaccineTypeEnum"
+								},
+								"type": "array"
+							}
+						},
+						"type": "object"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CallRequest": {
+				"properties": {
+					"pincode": {
+						"type": "number",
+						"format": "double"
+					},
+					"cvc_site_id": {
+						"type": "string"
+					},
+					"claim": {
+						"type": "boolean",
+						"description": "if set tp true, will lock the cvc for 20 minutes"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CallResponseEnum": {
+				"enum": [
+					"RESPONDED",
+					"NOT_RESPONDED",
+					"WRONG_NUMBER"
+				],
+				"type": "string"
+			},
+			"ReportRequest": {
+				"properties": {
+					"cvc_site_id": {
+						"type": "string"
+					},
+					"call_response": {
+						"$ref": "#/components/schemas/CallResponseEnum"
+					},
+					"status": {
+						"$ref": "#/components/schemas/CVCStatusEnum"
+					},
+					"cvcType": {
+						"$ref": "#/components/schemas/CVCTypeEnum"
+					},
+					"vaccines": {
+						"items": {
+							"$ref": "#/components/schemas/Vaccine"
+						},
+						"type": "array"
+					},
+					"address": {
+						"$ref": "#/components/schemas/CVCSiteAddress"
+					},
+					"operation_timings": {
+						"items": {
+							"$ref": "#/components/schemas/CVCOperationShift"
+						},
+						"type": "array"
+					},
+					"next_stock_refresh_on": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"verification_time": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
 				"type": "object",
 				"additionalProperties": false
 			}
@@ -40,23 +362,23 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/ping": {
+		"/api/v1/cvc": {
 			"post": {
-				"operationId": "GetMessage",
+				"operationId": "Search",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PingResponse"
+									"$ref": "#/components/schemas/PaginatedCVCData"
 								}
 							}
 						}
 					}
 				},
 				"tags": [
-					"Ping"
+					"CVC"
 				],
 				"security": [],
 				"parameters": [],
@@ -65,7 +387,57 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/PingRequest"
+								"$ref": "#/components/schemas/CVCRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/volunteer/call_request": {
+			"post": {
+				"operationId": "CallRequest",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Volunteer"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CallRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/volunteer/report": {
+			"post": {
+				"operationId": "Report",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Volunteer"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ReportRequest"
 							}
 						}
 					}
