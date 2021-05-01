@@ -20,15 +20,14 @@ export const getDistrictNames = async function (params: FilterQuery<CVC>) {
 };
 
 export const getCVCInformation = async function (params: FilterQuery<CVC>) {
-  const findObj: FilterQuery<CVC> = [];
+  const findObj: FilterQuery<CVC> = {};
   if (params['state'] !== undefined && params['state'] !== null) {
-    findObj.push({state: params['state']});
+    findObj.state = params.state;
   }
   if (params['district'] !== undefined && params['district'] !== null) {
-    findObj.push({district: params['district']});
+    findObj.district = params['district'];
   }
   const data = [];
-  // Todo: ask Jatin why the $and was necessary
   const cursor = cvcModel.find(findObj).cursor();
   for await (const doc of cursor) {
     console.log(doc);
