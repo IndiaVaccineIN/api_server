@@ -4,60 +4,77 @@ import {
   CVCTypeEnum,
   VaccineTypeEnum,
 } from '../../common/schema/composite';
-import {CVCRequest, PaginatedCVCData} from '../schema/cvc';
+import {CVCRequest, CVCResponseData, PaginatedCVCData} from '../schema/cvc';
+import cvcModel, {CenterDetails} from '../../models/cvc';
 
 @Tags('CVC')
 @Route('/api/v1/cvc')
 export class CVCController {
   @Post('/')
   public async search(@Body() req: CVCRequest): Promise<PaginatedCVCData> {
+    const query = this.getQuery(req);
+    const limit = req.page_size || 25;
+    const skip = ((req.page_number || 1) - 1) * limit;
+    const data = await cvcModel.find(query).skip(skip).limit(limit).exec();
+    const count = await cvcModel.find(query).count();
+    const total = count % limit === 0 ? count / limit : 1 + count / limit;
     return {
-      results: [
-        {
-          id: 'uuid',
-          name: 'cvc name',
-          cowin_center_id: 'cvc id',
-          type: CVCTypeEnum.CENTRAL,
-          address: {
-            block: 'locality to which cvc belong',
-            district: req.district || 'district to which cvc belong',
-            state: 'state to which cvc belongs',
-            city: 'city to which cvc belongs',
-            pincode: 560078,
-          },
-          last_verified_at: new Date(), // default "null"
-          operation_timings: {
-            start_time: 'HH-MM',
-            end_time: 'HH-MM',
-          },
-          slots: [
-            {
-              start_time: 'HH-MM',
-              end_time: 'HH-MM',
-            },
-          ],
-          //future scope
-          geo: {
-            latitude: 'latitude location',
-            longitude: 'longitude location',
-          },
-          vaccine_count: 150,
-          status: CVCStatusEnum.ACTIVE,
-          next_stock_refresh_on: new Date(),
-          google_maps_url: 'url for google location',
-          vaccines: [
-            {
-              name: 'covaxin',
-              type: VaccineTypeEnum.COVAXIN,
-              count: 130,
-              cost: 250,
-            },
-          ],
-        },
-      ],
-      total: 130, // number of CVC matching the criteria,
-      page_number: 1,
-      page_size: 20,
+      results: this.formatData(data),
+      total: total,
+      page_number: req.page_number || 1,
+      page_size: limit,
     };
+  }
+
+  private getQuery(params: CVCRequest) {
+    const query = [];
+    if (params.district) {
+      query.push({'cowin.district_name': params.district});
+    } else if (params.pincode) {
+      query.push({'cowin.pincode': params.pincode});
+    }
+    return {$and: query};
+  }
+
+  private formatData(data: CenterDetails[]): CVCResponseData[] {
+    const result: CVCResponseData[] = [];
+    data.forEach(doc => {
+      const formattedDoc: CVCResponseData = {
+        id: 'test',
+        name: doc.cowin.name,
+        cowin_center_id: doc.cowin.center_id,
+        type: CVCTypeEnum.UNKNOWN,
+        address: {
+          block: doc.cowin.block_name,
+          district: doc.cowin.district_name,
+          state: doc.cowin.state_name,
+          pincode: doc.cowin.pincode,
+        },
+        last_verified_at: doc.last_verified_at,
+        slots: [
+          {
+            start_time: doc.cowin.from,
+            end_time: doc.cowin.to,
+          },
+        ],
+        operation_timings: {
+          start_time: doc.cowin.from,
+          end_time: doc.cowin.to,
+        },
+        vaccine_count: 100,
+        status: CVCStatusEnum.UNKNOWN,
+        google_maps_url: 'test_url',
+        vaccines: [
+          {
+            name: '',
+            type: VaccineTypeEnum.UNKNOWN,
+            count: 0,
+            cost: 0,
+          },
+        ],
+      };
+      result.push(formattedDoc);
+    });
+    return result;
   }
 }

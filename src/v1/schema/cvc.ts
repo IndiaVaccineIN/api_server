@@ -52,7 +52,7 @@ export interface CVCSiteAddress {
   district: string;
   state: string;
   city?: string;
-  pincode: number;
+  pincode: string;
 }
 
 export interface CVCOperationTime {

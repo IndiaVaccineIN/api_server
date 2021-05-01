@@ -38,7 +38,7 @@ const cvcDataStoreSchemaFields: Record<keyof Center, any> = {
   updatedAt: Date,
 };
 
-interface CenterDetails extends Center, Document {}
+export interface CenterDetails extends Center, Document {}
 
 const cvcSchema: Schema<CenterDetails> = new Schema(cvcDataStoreSchemaFields);
 
