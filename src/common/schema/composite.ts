@@ -37,8 +37,4 @@ export interface CenterUpsertRequest {
   cowin: CowinCenter;
   sessions: Session[];
   vaccines: Vaccine[];
-  next_stock_refresh_on?: Date;
-  last_verified_at: Date;
-  last_verified_by: string;
-  google_maps_url: string;
 }

@@ -2,6 +2,10 @@ import mongoose, {Schema, Document} from 'mongoose';
 import {CenterUpsertRequest} from '../common/schema/composite';
 
 interface Center extends CenterUpsertRequest, Document {
+  next_stock_refresh_on?: Date;
+  last_verified_at: Date;
+  last_verified_by: string;
+  google_maps_url: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

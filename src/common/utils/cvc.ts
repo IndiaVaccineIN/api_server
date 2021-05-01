@@ -1,3 +1,5 @@
 import {CenterUpsertRequest} from '../schema/composite';
 
-function upsertData(data: CenterUpsertRequest[]) {}
+export async function upsertCowinCenters(data: CenterUpsertRequest[]) {
+  console.log(data);
+}

@@ -12,15 +12,19 @@
  * Make sure you migrate old data over to this format.
  */
 
-interface State {
+export interface State {
   state_id: number;
   state_name: string;
 }
 
-interface District {
+export interface District {
   state_id: number;
   district_id: number;
   district_name: string;
+}
+
+export interface Districts {
+  districts: District[];
 }
 
 export interface CenterResponseSchema {
