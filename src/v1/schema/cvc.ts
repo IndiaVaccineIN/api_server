@@ -4,6 +4,7 @@ export enum VaccineTypeEnum {
 }
 
 export enum CVCStatusEnum {
+  UNKNOWN = 'UNKNOWN',
   ACTIVE = 'ACTIVE',
   CLOSED = 'CLOSED',
   OUT_OF_STOCK = 'OUT_OF_STOCK',
@@ -51,15 +52,14 @@ export interface CVCRequest {
 }
 
 export interface CVCSiteAddress {
-  locality: string;
+  block: string;
   district: string;
   state: string;
-  city: string;
+  city?: string;
   pincode: number;
 }
 
-export interface CVCOperationShift {
-  shift: number;
+export interface CVCOperationTime {
   /**
    * Format: HH:MM
    */
@@ -81,18 +81,21 @@ export interface Vaccine {
   cost: number;
 }
 export enum CVCTypeEnum {
+  UNKNOWN = 'UNKNOWN',
   CENTRAL = 'CENTRAL',
   STATE = 'STATE',
   PRIVATE = 'PRIVATE',
 }
 export interface CVCData {
+  id: string;
   name: string;
-  cvc_site_id: string;
+  cowin_center_id: string;
   type: CVCTypeEnum;
   address: CVCSiteAddress;
   last_verified_at: Date;
-  operation_timings: CVCOperationShift[];
-  geo: GeoPoint;
+  slots: CVCOperationTime[];
+  operation_timings: CVCOperationTime;
+  geo?: GeoPoint;
   vaccine_count: number;
   status: CVCStatusEnum;
   next_stock_refresh_on?: Date;

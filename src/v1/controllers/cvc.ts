@@ -15,20 +15,24 @@ export class CVCController {
     return {
       results: [
         {
+          id: 'uuid',
           name: 'cvc name',
-          cvc_site_id: 'cvc id',
+          cowin_center_id: 'cvc id',
           type: CVCTypeEnum.CENTRAL,
           address: {
-            locality: 'locality to which cvc belong',
+            block: 'locality to which cvc belong',
             district: req.district || 'district to which cvc belong',
             state: 'state to which cvc belongs',
             city: 'city to which cvc belongs',
             pincode: 560078,
           },
           last_verified_at: new Date(), // default "null"
-          operation_timings: [
+          operation_timings: {
+            start_time: 'HH-MM',
+            end_time: 'HH-MM',
+          },
+          slots: [
             {
-              shift: 1,
               start_time: 'HH-MM',
               end_time: 'HH-MM',
             },
