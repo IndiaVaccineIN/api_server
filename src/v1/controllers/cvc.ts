@@ -1,11 +1,6 @@
 import {Route, Tags, Post, Body} from 'tsoa';
-import {
-  CVCRequest,
-  PaginatedCVCData,
-  CVCTypeEnum,
-  CVCStatusEnum,
-  VaccineTypeEnum,
-} from '../schema/cvc';
+import {CVCTypeEnum} from '../../common/schema/composite';
+import {CVCRequest, PaginatedCVCData} from '../schema/cvc';
 
 @Tags('CVC')
 @Route('/api/v1/cvc')

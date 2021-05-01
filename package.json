@@ -18,7 +18,8 @@
     "pretest": "npm run compile",
     "posttest": "npm run lint",
     "precommit": "lint-staged",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "cron-job": "node ./build/src/scraper/cron.js"
   },
   "lint-staged": {
     "**/*.ts": [

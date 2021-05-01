@@ -1,16 +1,12 @@
 import mongoose, {Schema, Document} from 'mongoose';
+import {CenterUpsertRequest} from '../common/schema/composite';
 
-export interface CVC extends Document {
-  state: string;
-  district: string;
-  cvc: string;
-  day: string;
-  value: number;
+interface Center extends CenterUpsertRequest, Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-const cvcSchema: Schema<CVC> = new mongoose.Schema(
+const cvcSchema: Schema<Center> = new mongoose.Schema(
   {
     state: {
       type: String,
@@ -51,5 +47,5 @@ cvcSchema.methods.toJSON = function () {
   return cvcDetailsObj;
 };
 
-const CVCdetails = mongoose.model<CVC>('cvc_details', cvcSchema);
+const CVCdetails = mongoose.model<Center>('cvc_details', cvcSchema);
 export default CVCdetails;

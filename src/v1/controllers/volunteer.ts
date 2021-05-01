@@ -1,11 +1,10 @@
 import {Body, Post, Route, Tags} from 'tsoa';
 import {
-  CVCOperationShift,
-  CVCSiteAddress,
   CVCStatusEnum,
   CVCTypeEnum,
   Vaccine,
-} from '../schema/cvc';
+} from '../../common/schema/composite';
+import {CVCOperationTime, CVCSiteAddress} from '../schema/cvc';
 
 export interface CallRequest {
   pincode?: number;
@@ -29,7 +28,7 @@ export interface ReportRequest {
   cvcType?: CVCTypeEnum;
   vaccines?: Vaccine[];
   address?: CVCSiteAddress;
-  operation_timings?: CVCOperationShift[];
+  operation_timings?: CVCOperationTime[];
   next_stock_refresh_on?: Date;
   verification_time?: Date;
 }

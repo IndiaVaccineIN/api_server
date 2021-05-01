@@ -1,14 +1,9 @@
-export enum VaccineTypeEnum {
-  COVAXIN = 'COVAXIN',
-  COVISHIELD = 'COVISHIELD',
-}
-
-export enum CVCStatusEnum {
-  UNKNOWN = 'UNKNOWN',
-  ACTIVE = 'ACTIVE',
-  CLOSED = 'CLOSED',
-  OUT_OF_STOCK = 'OUT_OF_STOCK',
-}
+import {
+  CVCStatusEnum,
+  CVCTypeEnum,
+  Vaccine,
+  VaccineTypeEnum,
+} from '../../common/schema/composite';
 
 export enum SortOrderEnum {
   ASC = 'ASC',
@@ -74,19 +69,7 @@ export interface GeoPoint {
   latitude: string;
   longitude: string;
 }
-export interface Vaccine {
-  name: string;
-  type: VaccineTypeEnum;
-  count: number;
-  cost: number;
-}
-export enum CVCTypeEnum {
-  UNKNOWN = 'UNKNOWN',
-  CENTRAL = 'CENTRAL',
-  STATE = 'STATE',
-  PRIVATE = 'PRIVATE',
-}
-export interface CVCData {
+export interface CVCResponseData {
   id: string;
   name: string;
   cowin_center_id: string;
@@ -106,5 +89,5 @@ export interface PaginatedCVCData {
   total: number;
   page_number: number;
   page_size: number;
-  results: CVCData[];
+  results: CVCResponseData[];
 }
