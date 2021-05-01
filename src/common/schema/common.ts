@@ -1,14 +1,14 @@
 import {Schema, Document} from 'mongoose';
 import {CenterResponseSchema, Session} from '../../common/schema/cowin';
+//import uuid from 'node-uuid';
+
 import {
-  CenterUpsertRequest,
   Vaccine,
-  CVCStatusEnum,
   CowinCenter,
   VaccineTypeEnum,
 } from '../../common/schema/composite';
 
-const sessionSchemaFields: Record<keyof Session, any> = {
+export const sessionSchemaFields: Record<keyof Session, any> = {
   session_id: {
     type: String,
     required: true,
@@ -24,7 +24,7 @@ const sessionSchemaFields: Record<keyof Session, any> = {
   slots: [String],
 };
 
-const vaccineSchemaFileds: Record<keyof Vaccine, any> = {
+export const vaccineSchemaFileds: Record<keyof Vaccine, any> = {
   name: {
     type: String,
     required: true,
@@ -42,7 +42,7 @@ const vaccineSchemaFileds: Record<keyof Vaccine, any> = {
   },
 };
 
-const CowinCenterSchemaFields: Record<keyof CowinCenter, any> = {
+export const CowinCenterSchemaFields: Record<keyof CowinCenter, any> = {
   center_id: {
     type: Number,
     required: true,
@@ -82,23 +82,6 @@ const CowinCenterSchemaFields: Record<keyof CowinCenter, any> = {
   total: Number,
 };
 
-const cvcDataStoreSchemaFields: Record<keyof CenterUpsertRequest, any> = {
-  status: {
-    type: CVCStatusEnum,
-    default: CVCStatusEnum.UNKNOWN,
-  },
-  cowin: {
-    type: CowinCenterSchemaFields,
-    required: true,
-  },
-  sessions: {
-    type: [sessionSchemaFields],
-  },
-  vaccines: {
-    type: [vaccineSchemaFileds],
-  },
-  next_stock_refresh_on: Date,
-  last_verified_at: Date,
-  last_verified_by: String,
-  google_maps_url: String,
-};
+// _id: { type: String, default: function genUUID() {
+//     uuid.v4()
+// }},

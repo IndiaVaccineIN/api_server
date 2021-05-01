@@ -30,7 +30,8 @@ export interface CVCRequest {
    */
   page_size?: number;
   sort?: {
-    distance: SortOrderEnum;
+    distance?: SortOrderEnum;
+    vaccine_count?: SortOrderEnum;
   };
   filter?: {
     vaccines?: VaccineTypeEnum[];
