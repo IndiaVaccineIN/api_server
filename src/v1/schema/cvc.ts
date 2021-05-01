@@ -1,13 +1,9 @@
-export enum VaccineTypeEnum {
-  COVAXIN = 'COVAXIN',
-  COVISHIELD = 'COVISHIELD',
-}
-
-export enum CVCStatusEnum {
-  ACTIVE = 'ACTIVE',
-  CLOSED = 'CLOSED',
-  OUT_OF_STOCK = 'OUT_OF_STOCK',
-}
+import {
+  CVCStatusEnum,
+  CVCTypeEnum,
+  Vaccine,
+  VaccineTypeEnum,
+} from '../../common/schema/composite';
 
 export enum SortOrderEnum {
   ASC = 'ASC',
@@ -51,15 +47,14 @@ export interface CVCRequest {
 }
 
 export interface CVCSiteAddress {
-  locality: string;
+  block: string;
   district: string;
   state: string;
-  city: string;
+  city?: string;
   pincode: number;
 }
 
-export interface CVCOperationShift {
-  shift: number;
+export interface CVCOperationTime {
   /**
    * Format: HH:MM
    */
@@ -74,25 +69,16 @@ export interface GeoPoint {
   latitude: string;
   longitude: string;
 }
-export interface Vaccine {
+export interface CVCResponseData {
+  id: string;
   name: string;
-  type: VaccineTypeEnum;
-  count: number;
-  cost: number;
-}
-export enum CVCTypeEnum {
-  CENTRAL = 'CENTRAL',
-  STATE = 'STATE',
-  PRIVATE = 'PRIVATE',
-}
-export interface CVCData {
-  name: string;
-  cvc_site_id: string;
+  cowin_center_id: string;
   type: CVCTypeEnum;
   address: CVCSiteAddress;
   last_verified_at: Date;
-  operation_timings: CVCOperationShift[];
-  geo: GeoPoint;
+  slots: CVCOperationTime[];
+  operation_timings: CVCOperationTime;
+  geo?: GeoPoint;
   vaccine_count: number;
   status: CVCStatusEnum;
   next_stock_refresh_on?: Date;
@@ -103,5 +89,5 @@ export interface PaginatedCVCData {
   total: number;
   page_number: number;
   page_size: number;
-  results: CVCData[];
+  results: CVCResponseData[];
 }

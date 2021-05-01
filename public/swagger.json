@@ -8,6 +8,7 @@
 		"schemas": {
 			"CVCTypeEnum": {
 				"enum": [
+					"UNKNOWN",
 					"CENTRAL",
 					"STATE",
 					"PRIVATE"
@@ -16,7 +17,7 @@
 			},
 			"CVCSiteAddress": {
 				"properties": {
-					"locality": {
+					"block": {
 						"type": "string"
 					},
 					"district": {
@@ -34,21 +35,16 @@
 					}
 				},
 				"required": [
-					"locality",
+					"block",
 					"district",
 					"state",
-					"city",
 					"pincode"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CVCOperationShift": {
+			"CVCOperationTime": {
 				"properties": {
-					"shift": {
-						"type": "number",
-						"format": "double"
-					},
 					"start_time": {
 						"type": "string",
 						"description": "Format: HH:MM"
@@ -59,7 +55,6 @@
 					}
 				},
 				"required": [
-					"shift",
 					"start_time",
 					"end_time"
 				],
@@ -84,6 +79,7 @@
 			},
 			"CVCStatusEnum": {
 				"enum": [
+					"UNKNOWN",
 					"ACTIVE",
 					"CLOSED",
 					"OUT_OF_STOCK"
@@ -125,10 +121,13 @@
 			},
 			"CVCData": {
 				"properties": {
+					"id": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
-					"cvc_site_id": {
+					"cowin_center_id": {
 						"type": "string"
 					},
 					"type": {
@@ -141,11 +140,14 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"operation_timings": {
+					"slots": {
 						"items": {
-							"$ref": "#/components/schemas/CVCOperationShift"
+							"$ref": "#/components/schemas/CVCOperationTime"
 						},
 						"type": "array"
+					},
+					"operation_timings": {
+						"$ref": "#/components/schemas/CVCOperationTime"
 					},
 					"geo": {
 						"$ref": "#/components/schemas/GeoPoint"
@@ -172,13 +174,14 @@
 					}
 				},
 				"required": [
+					"id",
 					"name",
-					"cvc_site_id",
+					"cowin_center_id",
 					"type",
 					"address",
 					"last_verified_at",
+					"slots",
 					"operation_timings",
-					"geo",
 					"vaccine_count",
 					"status",
 					"google_maps_url",
@@ -336,7 +339,7 @@
 					},
 					"operation_timings": {
 						"items": {
-							"$ref": "#/components/schemas/CVCOperationShift"
+							"$ref": "#/components/schemas/CVCOperationTime"
 						},
 						"type": "array"
 					},

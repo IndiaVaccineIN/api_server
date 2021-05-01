@@ -12,6 +12,17 @@
  * Make sure you migrate old data over to this format.
  */
 
+interface State {
+  state_id: number;
+  state_name: string;
+}
+
+interface District {
+  state_id: number;
+  district_id: number;
+  district_name: string;
+}
+
 export interface CenterResponseSchema {
   center_id: number;
   name: string;
@@ -45,6 +56,7 @@ export interface SessionResponseSchema extends CenterResponseSchema {
   /** Array of slot names */
   slots: string[];
 }
+
 export interface SessionCalendarEntrySchema {
   center_id: number;
   name: string;

@@ -1,13 +1,14 @@
-const axios = require("axios").default;
-const _ = require("lodash");
-const moment = require("moment");
-const jsonWriter = require("jsonfile");
-const path = require("path");
-const CsvWriter = require("./lib/csv-writer");
-const makeDir = require("./lib/make-dir");
-const jsonDataDir = path.resolve(__dirname, "data-raw", "json");
-const csvDataDir = path.resolve(__dirname, "data-raw", "csv");
-const zipDataDir = path.resolve(__dirname, "data-zip");
+import {default as axios} from 'axios';
+import _ from 'lodash';
+import moment from 'moment';
+import jsonWriter from 'jsonfile';
+import path from 'path';
+import CsvWriter from './lib/csv-writer';
+import makeDir from './lib/make-dir';
+
+const jsonDataDir = path.resolve(__dirname, 'data-raw', 'json');
+const csvDataDir = path.resolve(__dirname, 'data-raw', 'csv');
+const zipDataDir = path.resolve(__dirname, 'data-zip');
 
 (async () => {
   try {
@@ -16,7 +17,7 @@ const zipDataDir = path.resolve(__dirname, "data-zip");
     await makeDir(zipDataDir);
   } catch (error) {
     console.error(error);
-    console.error("Could not create data directories. Exiting ....");
+    console.error('Could not create data directories. Exiting ....');
     process.exit(1);
   }
 })();
@@ -24,43 +25,43 @@ const zipDataDir = path.resolve(__dirname, "data-zip");
 // State information scraped from cowin dashboard
 /// TODO: dynamically get the state list from the api
 var states = [
-  { name: "Andaman and Nicobar Islands", id: "1" },
-  { name: "Andhra Pradesh", id: "2" },
-  { name: "Arunachal Pradesh", id: "3" },
-  { name: "Assam", id: "4" },
-  { name: "Bihar", id: "5" },
-  { name: "Chandigarh", id: "6" },
-  { name: "Chhattisgarh", id: "7" },
-  { name: "Dadra and Nagar Haveli", id: "8" },
-  { name: "Daman and Diu", id: "37" },
-  { name: "Delhi", id: "9" },
-  { name: "Goa", id: "10" },
-  { name: "Gujarat", id: "11" },
-  { name: "Haryana", id: "12" },
-  { name: "Himachal Pradesh", id: "13" },
-  { name: "Jammu and Kashmir", id: "14" },
-  { name: "Jharkhand", id: "15" },
-  { name: "Karnataka", id: "16" },
-  { name: "Kerala", id: "17" },
-  { name: "Ladakh", id: "18" },
-  { name: "Lakshadweep", id: "19" },
-  { name: "Madhya Pradesh", id: "20" },
-  { name: "Maharashtra", id: "21" },
-  { name: "Manipur", id: "22" },
-  { name: "Meghalaya", id: "23" },
-  { name: "Mizoram", id: "24" },
-  { name: "Nagaland", id: "25" },
-  { name: "Odisha", id: "26" },
-  { name: "Puducherry", id: "27" },
-  { name: "Punjab", id: "28" },
-  { name: "Rajasthan", id: "29" },
-  { name: "Sikkim", id: "30" },
-  { name: "Tamil Nadu", id: "31" },
-  { name: "Telangana", id: "32" },
-  { name: "Tripura", id: "33" },
-  { name: "Uttar Pradesh", id: "34" },
-  { name: "Uttarakhand", id: "35" },
-  { name: "West Bengal", id: "36" },
+  {name: 'Andaman and Nicobar Islands', id: '1'},
+  {name: 'Andhra Pradesh', id: '2'},
+  {name: 'Arunachal Pradesh', id: '3'},
+  {name: 'Assam', id: '4'},
+  {name: 'Bihar', id: '5'},
+  {name: 'Chandigarh', id: '6'},
+  {name: 'Chhattisgarh', id: '7'},
+  {name: 'Dadra and Nagar Haveli', id: '8'},
+  {name: 'Daman and Diu', id: '37'},
+  {name: 'Delhi', id: '9'},
+  {name: 'Goa', id: '10'},
+  {name: 'Gujarat', id: '11'},
+  {name: 'Haryana', id: '12'},
+  {name: 'Himachal Pradesh', id: '13'},
+  {name: 'Jammu and Kashmir', id: '14'},
+  {name: 'Jharkhand', id: '15'},
+  {name: 'Karnataka', id: '16'},
+  {name: 'Kerala', id: '17'},
+  {name: 'Ladakh', id: '18'},
+  {name: 'Lakshadweep', id: '19'},
+  {name: 'Madhya Pradesh', id: '20'},
+  {name: 'Maharashtra', id: '21'},
+  {name: 'Manipur', id: '22'},
+  {name: 'Meghalaya', id: '23'},
+  {name: 'Mizoram', id: '24'},
+  {name: 'Nagaland', id: '25'},
+  {name: 'Odisha', id: '26'},
+  {name: 'Puducherry', id: '27'},
+  {name: 'Punjab', id: '28'},
+  {name: 'Rajasthan', id: '29'},
+  {name: 'Sikkim', id: '30'},
+  {name: 'Tamil Nadu', id: '31'},
+  {name: 'Telangana', id: '32'},
+  {name: 'Tripura', id: '33'},
+  {name: 'Uttar Pradesh', id: '34'},
+  {name: 'Uttarakhand', id: '35'},
+  {name: 'West Bengal', id: '36'},
 ];
 
 // hashing the ids to quickly map through them when we get
@@ -72,11 +73,11 @@ var stateMap = states.reduce((acc, cur) => {
 
 const cowinApi = {
   district: {
-    uri: "https://dashboard.cowin.gov.in/assets/json/csvjson.json",
+    uri: 'https://dashboard.cowin.gov.in/assets/json/csvjson.json',
   },
   report: {
-    uri: "https://api.cowin.gov.in/api/v1/reports/v2/getPublicReports",
-    params: { state: "state_id", district: "district_id", date: "date" },
+    uri: 'https://api.cowin.gov.in/api/v1/reports/v2/getPublicReports',
+    params: {state: 'state_id', district: 'district_id', date: 'date'},
   },
 };
 
@@ -92,9 +93,9 @@ async function extractStates(data) {}
 async function getAllStates(api, date) {
   let allStateReportParams = {};
   // build the query string for report uri
-  allStateReportParams[_.get(api, "report.params.state")] = "";
-  allStateReportParams[_.get(api, "report.params.district")] = "";
-  allStateReportParams[_.get(api, "report.params.date")] = date;
+  allStateReportParams[_.get(api, 'report.params.state')] = '';
+  allStateReportParams[_.get(api, 'report.params.district')] = '';
+  allStateReportParams[_.get(api, 'report.params.date')] = date;
 
   try {
     return await getReportData(
@@ -139,9 +140,9 @@ async function getReportData(uri, params, jsonFilePath) {
  */
 async function getDistrictReport(api, stateId, districtId, date) {
   let districtReportParams = {};
-  districtReportParams[_.get(api, "report.params.state")] = stateId;
-  districtReportParams[_.get(api, "report.params.district")] = districtId;
-  districtReportParams[_.get(api, "report.params.date")] = date;
+  districtReportParams[_.get(api, 'report.params.state')] = stateId;
+  districtReportParams[_.get(api, 'report.params.district')] = districtId;
+  districtReportParams[_.get(api, 'report.params.date')] = date;
 
   try {
     return await getReportData(
@@ -171,17 +172,17 @@ async function writeToCsv(data, filePath) {
 
   // extract
   /// TODO: add validation for response data
-  let districts = districtResponse.data.map((d) => {
+  let districts = districtResponse.data.map(d => {
     d.state_name = stateMap[d.state_id];
     return d;
   });
 
   // sort districts by state for better data output order
-  districts = _.sortBy(districts, ["state_id"]);
+  districts = _.sortBy(districts, ['state_id']);
 
   // uses current date for now
   // can be made a configuration value later
-  const today = moment().format("YYYY-M-DD");
+  const today = moment().format('YYYY-M-DD');
 
   // get state level data
   const allStatesData = await getAllStates(cowinApi, today);
@@ -237,10 +238,10 @@ async function writeToCsv(data, filePath) {
       // write data back to aggregated as well as specific csv
       for (let i = 0; i < cvcs.length; i++) {
         const cvc = cvcs[i];
-        cvc["state_id"] = district.state_id;
-        cvc["state_name"] = district.state_name;
-        cvc["district_id"] = district.district_id;
-        cvc["district_name"] = district.district_name;
+        cvc['state_id'] = district.state_id;
+        cvc['state_name'] = district.state_name;
+        cvc['district_id'] = district.district_id;
+        cvc['district_name'] = district.district_name;
         await districtCsvWriter.write(cvc);
         await allDistrictsCsvWriter.write(cvc);
       }
