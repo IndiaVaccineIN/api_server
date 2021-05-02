@@ -30,8 +30,7 @@
 						"type": "string"
 					},
 					"pincode": {
-						"type": "number",
-						"format": "double"
+						"type": "string"
 					}
 				},
 				"required": [
@@ -129,7 +128,8 @@
 						"type": "string"
 					},
 					"cowin_center_id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"type": {
 						"$ref": "#/components/schemas/CVCTypeEnum"
@@ -234,6 +234,11 @@
 						"type": "string",
 						"description": "Name of the district.\nEither this or pincode is required"
 					},
+					"district_id": {
+						"type": "number",
+						"format": "double",
+						"description": "Cowin district id"
+					},
 					"pincode": {
 						"type": "number",
 						"format": "double",
@@ -251,13 +256,13 @@
 					},
 					"sort": {
 						"properties": {
+							"vaccine_count": {
+								"$ref": "#/components/schemas/SortOrderEnum"
+							},
 							"distance": {
 								"$ref": "#/components/schemas/SortOrderEnum"
 							}
 						},
-						"required": [
-							"distance"
-						],
 						"type": "object"
 					},
 					"filter": {
