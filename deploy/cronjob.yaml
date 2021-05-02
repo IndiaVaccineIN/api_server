@@ -1,4 +1,4 @@
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: api-refresh-data
@@ -15,4 +15,10 @@ spec:
                 - npm
                 - run
                 - cowin_cron
+              env:
+                - name: MONGODB_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: url
+                      name: api-server-mongo-creds
           restartPolicy: OnFailure

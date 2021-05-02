@@ -21,7 +21,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        app: server
+        app: api-server
     spec:
       containers:
         - image: __IMAGE__NAME__
@@ -33,4 +33,19 @@ spec:
                 secretKeyRef:
                   key: url
                   name: api-server-mongo-creds
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
       terminationGracePeriodSeconds: 30
