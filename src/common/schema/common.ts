@@ -7,6 +7,7 @@ import {
   CowinCenter,
   VaccineTypeEnum,
 } from '../../common/schema/composite';
+//import {DateTime} from 'luxon';
 
 export const sessionSchemaFields: Record<keyof Session, any> = {
   session_id: {
@@ -76,10 +77,11 @@ export const CowinCenterSchemaFields: Record<keyof CowinCenter, any> = {
   to: String,
   fee_type: {
     type: String,
-    default: 'Unkown',
+    default: 'Unknown',
   },
   today: Number,
   total: Number,
+  // scraped_at: DateTime,
 };
 
 // _id: { type: String, default: function genUUID() {
