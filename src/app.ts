@@ -28,7 +28,11 @@ app.use(
     },
   })
 );
+const healthRouter = express.Router();
+healthRouter.get('', (req, res) => {
+  res.send('I am groot');
+});
 
 app.use('/api/v1', devAPIs);
-
+app.use('/healthz', healthRouter);
 export default app;

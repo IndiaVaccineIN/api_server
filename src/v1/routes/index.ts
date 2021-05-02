@@ -9,6 +9,7 @@ import express from 'express';
 //   getDistrictNames,
 // } from '../controllers/retrieveCVCInfo';
 import {CVCController} from '../controllers/cvc';
+import {MetaController} from '../controllers/meta';
 import {VolunteerController} from '../controllers/volunteer';
 const router = express.Router();
 
@@ -75,6 +76,19 @@ const router = express.Router();
 //     }
 //   );
 // });
+
+router.get('/meta/states', async (req, res) => {
+  const controller = new MetaController();
+  const response = await controller.states();
+  return res.send(response);
+});
+
+router.get('/meta/states/:state_id', async (req, res) => {
+  const params = req.params;
+  const controller = new MetaController();
+  const response = await controller.districts(params.state_id);
+  return res.send(response);
+});
 
 router.post('/cvc', async (req, res) => {
   const controller = new CVCController();
