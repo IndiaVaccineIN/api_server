@@ -62,7 +62,7 @@ export interface SessionResponseSchema extends CenterResponseSchema {
 }
 
 export interface SessionCalendarEntrySchema {
-  center_id: string;
+  center_id: number;
   name: string;
   /** Name in preferred language as specified in Accept-Language header parameter. */
   name_l?: string;
