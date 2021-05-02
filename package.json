@@ -19,7 +19,7 @@
     "posttest": "npm run lint",
     "precommit": "lint-staged",
     "postinstall": "husky install",
-    "cowin-cron": "npm run compile && node ./build/src/scraper/cowin-cron.js"
+    "cowin_cron": "npm run compile && node ./build/src/scraper/cowin_cron.js"
   },
   "lint-staged": {
     "**/*.ts": [
