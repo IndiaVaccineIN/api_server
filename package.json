@@ -19,7 +19,7 @@
     "posttest": "npm run lint",
     "precommit": "lint-staged",
     "postinstall": "husky install",
-    "cowin_cron": "npm run compile && node ./build/src/scraper/cowin_cron.js"
+    "cowin-cron": "npm run compile && node ./build/src/scraper/cowin-cron.js"
   },
   "lint-staged": {
     "**/*.ts": [
@@ -48,6 +48,7 @@
     "csv-parse": "^4.15.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "lodash": "^4.17.21",
     "luxon": "^1.26.0",
     "moment": "^2.29.1",
     "mongoose": "^5.12.6",
@@ -62,6 +63,7 @@
     "@types/clone": "^2.1.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.11",
+    "@types/lodash": "^4.14.168",
     "@types/luxon": "^1.26.5",
     "@types/morgan": "^1.9.2",
     "@types/node": "^15.0.1",
