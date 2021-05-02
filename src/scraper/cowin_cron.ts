@@ -127,8 +127,8 @@ function buildCowinCenter(
 
       batch.push(center);
     }
-    logger.debug(`running upsert on batch (${batch.length})`);
-    //await upsertCowinCenters(batch);
+    // logger.debug(`running upsert on batch (${batch.length})`);
+    await upsertCowinCenters(batch);
   }
   exit(0);
 })();
