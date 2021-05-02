@@ -1,5 +1,7 @@
 import {State} from '../schema/cowin';
 
+/// FIXME:Joel
+/// Change to using the api to fetch the list of states
 export const States: State[] = [
   {
     state_id: 1,
