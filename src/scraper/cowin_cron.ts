@@ -14,9 +14,13 @@ import {
   VaccineTypeEnum,
 } from '../common/schema/composite';
 import {upsertCowinCenters} from '../common/utils/cvc';
+import {createMongoConnections} from '../db/mongoose';
+import dotenv from 'dotenv';
+import {exit} from 'node:process';
 import logger from '../logger';
 import {BeneficiariesSchema} from '../common/schema/cowin-dashboard';
 
+dotenv.config();
 // build a map of states
 const states: {[id: string]: State} = {};
 States.map(s => {
@@ -24,7 +28,7 @@ States.map(s => {
 });
 
 function buildVaccine(_centre: SessionCalendarEntrySchema) {
-  const vaccines: Vaccine[] = [];
+  const vaccines: Partial<Vaccine>[] = [];
   if (_centre.vaccine_fees) {
     for (const v_fees of _centre.vaccine_fees) {
       let v_type: VaccineTypeEnum = VaccineTypeEnum.UNKNOWN;
@@ -42,11 +46,11 @@ function buildVaccine(_centre: SessionCalendarEntrySchema) {
       } catch (e) {
         console.error(e);
       }
-      const v: Vaccine = {
+      const v: Partial<Vaccine> = {
         name: v_fees.vaccine.toLowerCase(),
         type: v_type,
         //Todo: add sum
-        count: 0,
+        //count: 0,
         cost: fee,
       };
 
@@ -80,7 +84,7 @@ function buildCowinCenter(
 // main function
 (async () => {
   for (const d of Districts) {
-    const batch: CenterUpsertRequest[] = [];
+    const batch: Partial<CenterUpsertRequest>[] = [];
     const dist = new District(
       d.district_id,
       d.district_name,
@@ -102,10 +106,12 @@ function buildCowinCenter(
         `Could not map center ${_centre.center_id}: ${_centre.name}, ${_centre.district_name}, ${_centre.state_name}`
       );
 
-      const cowin: CowinCenter = buildCowinCenter(_centre, _cvc);
-      const vaccines: Vaccine[] = buildVaccine(_centre);
+      const cowin: Partial<CowinCenter> = buildCowinCenter(_centre, _cvc);
+      const vaccines: Partial<Vaccine>[] = buildVaccine(_centre);
 
-      const center: CenterUpsertRequest = {
+      const center: Partial<CenterUpsertRequest> = {
+        state_id: d.state_id,
+        district_id: d.district_id,
         status: CVCStatusEnum.UNKNOWN,
         cowin: cowin,
         sessions: _centre.sessions,
