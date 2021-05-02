@@ -14,7 +14,7 @@
     "compile": "tsc",
     "fix": "gts fix",
     "check": "gts check",
-    "prepare": "husky install && npm run compile",
+    "prepare": "husky install",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
     "precommit": "lint-staged",

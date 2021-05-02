@@ -36,10 +36,13 @@ app.use(
   })
 );
 const healthRouter = express.Router();
-healthRouter.get('', (req, res) => {
+const groot = (req: any, res: any) => {
   res.send('I am groot');
-});
+};
+healthRouter.get('/healthz', groot);
+healthRouter.get('/', groot);
+healthRouter.get('/health', groot);
 
 app.use('/api/v1', devAPIs);
-app.use('/healthz', healthRouter);
+app.use('/', healthRouter);
 export default app;

@@ -3,10 +3,11 @@ FROM node:16-alpine3.11
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
-COPY ./ .
-
-# I know it's slower, but at least it will work
+COPY ./package.json .
+COPY ./package-lock.json .
 RUN npm install
+
+COPY ./ .
 
 RUN npm run compile
 
