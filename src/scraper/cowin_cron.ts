@@ -14,14 +14,20 @@ import {
   VaccineTypeEnum,
 } from '../common/schema/composite';
 import {upsertCowinCenters} from '../common/utils/cvc';
+import {createMongoConnections} from '../db/mongoose';
+import dotenv from 'dotenv';
+import {exit} from 'node:process';
+
+dotenv.config();
 
 const states: {[id: string]: State} = {};
 States.map(s => {
   states[s.state_id] = s;
 });
 (async () => {
+  await createMongoConnections();
   for (const d of Districts) {
-    const batch: CenterUpsertRequest[] = [];
+    const batch: Partial<CenterUpsertRequest>[] = [];
     const dist = new District(
       d.district_id,
       d.district_name,
@@ -29,7 +35,7 @@ States.map(s => {
     );
     const resp = await dist.getCenters(DateTime.now().setZone('Asia/Kolkata'));
     for (const s of resp) {
-      const cowin: CowinCenter = {
+      const cowin: Partial<CowinCenter> = {
         center_id: s.center_id,
         name: s.name,
         state_name: s.state_name,
@@ -39,11 +45,11 @@ States.map(s => {
         from: s.from,
         to: s.to,
         fee_type: s.fee_type,
-        // Todo: pull fromother db
-        today: 0,
-        total: 0,
+        // Todo: pull from other api
+        //today: 0,
+        //total: 0,
       };
-      const vaccines: Vaccine[] = [];
+      const vaccines: Partial<Vaccine>[] = [];
       if (s.vaccine_fees) {
         for (const v_fees of s.vaccine_fees) {
           let v_type: VaccineTypeEnum = VaccineTypeEnum.UNKNOWN;
@@ -61,11 +67,11 @@ States.map(s => {
           } catch (e) {
             console.error(e);
           }
-          const v: Vaccine = {
+          const v: Partial<Vaccine> = {
             name: v_fees.vaccine.toLowerCase(),
             type: v_type,
             //Todo: add sum
-            count: 0,
+            //count: 0,
             cost: fee,
           };
 
@@ -73,7 +79,9 @@ States.map(s => {
         }
       }
 
-      const center: CenterUpsertRequest = {
+      const center: Partial<CenterUpsertRequest> = {
+        state_id: d.state_id,
+        district_id: d.district_id,
         status: CVCStatusEnum.UNKNOWN,
         cowin: cowin,
         sessions: s.sessions,
@@ -83,4 +91,5 @@ States.map(s => {
     }
     await upsertCowinCenters(batch);
   }
+  exit(0);
 })();

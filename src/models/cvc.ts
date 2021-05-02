@@ -1,7 +1,7 @@
 import mongoose, {Schema, Document} from 'mongoose';
 import {CenterUpsertRequest, CVCStatusEnum} from '../common/schema/composite';
 import {
-  vaccineSchemaFileds,
+  vaccineSchemaFields,
   sessionSchemaFields,
   CowinCenterSchemaFields,
 } from '../common/schema/common';
@@ -16,6 +16,14 @@ interface Center extends CenterUpsertRequest {
 }
 
 const cvcDataStoreSchemaFields: Record<keyof Center, any> = {
+  state_id: {
+    type: Number,
+    required: true,
+  },
+  district_id: {
+    type: Number,
+    required: true,
+  },
   status: {
     type: CVCStatusEnum,
     default: CVCStatusEnum.UNKNOWN,
@@ -28,7 +36,7 @@ const cvcDataStoreSchemaFields: Record<keyof Center, any> = {
     type: [sessionSchemaFields],
   },
   vaccines: {
-    type: [vaccineSchemaFileds],
+    type: [vaccineSchemaFields],
   },
   next_stock_refresh_on: Date,
   last_verified_at: Date,
@@ -41,6 +49,14 @@ const cvcDataStoreSchemaFields: Record<keyof Center, any> = {
 export interface CenterDetails extends Center, Document {}
 
 const cvcSchema: Schema<CenterDetails> = new Schema(cvcDataStoreSchemaFields);
+cvcSchema.index(
+  {state_id: 1, district_id: 1, 'cowin.center_id': 1},
+  {unique: true}
+);
+cvcSchema.index({district_id: 1}, {background: true});
+cvcSchema.index({'cowin.district_name': 1}, {background: true});
+cvcSchema.index({'cowin.pincode': 1}, {background: true});
+// Todo: Add more indexes for search
 
 cvcSchema.methods.toJSON = function () {
   const cvcDetailsObj = this.toObject();
@@ -50,5 +66,5 @@ cvcSchema.methods.toJSON = function () {
   return cvcDetailsObj;
 };
 
-const CVCdetails = mongoose.model<CenterDetails>('cvc_details', cvcSchema);
+const CVCdetails = mongoose.model<CenterDetails>('cvc', cvcSchema);
 export default CVCdetails;

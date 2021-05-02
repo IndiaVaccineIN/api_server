@@ -28,7 +28,7 @@ export interface Districts {
 }
 
 export interface CenterResponseSchema {
-  center_id: string;
+  center_id: number;
   name: string;
   /** Name in preferred language as specified in Accept-Language header parameter. */
   name_l?: string;

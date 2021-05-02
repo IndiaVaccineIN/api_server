@@ -57,7 +57,6 @@ export class District {
       throw e;
     }
     const data = resp.data;
-    console.log(data.centers);
     return data.centers;
   }
 }
