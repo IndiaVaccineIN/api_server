@@ -25,7 +25,7 @@ export const sessionSchemaFields: Record<keyof Session, any> = {
   slots: [String],
 };
 
-export const vaccineSchemaFileds: Record<keyof Vaccine, any> = {
+export const vaccineSchemaFields: Record<keyof Vaccine, any> = {
   name: {
     type: String,
     required: true,

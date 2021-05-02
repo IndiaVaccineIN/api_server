@@ -17,6 +17,10 @@ export interface CVCRequest {
    */
   district?: string;
   /**
+   * Cowin district id
+   */
+  district_id?: number;
+  /**
    * Pincode to search with.
    * Either this or district is required
    */
@@ -73,7 +77,7 @@ export interface GeoPoint {
 export interface CVCResponseData {
   id: string;
   name: string;
-  cowin_center_id: string;
+  cowin_center_id: number;
   type: CVCTypeEnum;
   address: CVCSiteAddress;
   last_verified_at: Date;

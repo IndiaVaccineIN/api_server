@@ -22,8 +22,8 @@ export enum CVCStatusEnum {
 }
 
 export interface CowinCenter extends CenterResponseSchema {
-  today: number;
-  total: number;
+  today?: number;
+  total?: number;
   // scraped_at: DateTime;
 }
 
@@ -35,8 +35,10 @@ export enum CVCTypeEnum {
 }
 
 export interface CenterUpsertRequest {
+  state_id: number;
+  district_id: number;
   status: CVCStatusEnum;
-  cowin: CowinCenter;
-  sessions: Session[];
-  vaccines: Vaccine[];
+  cowin: Partial<CowinCenter>;
+  sessions: Partial<Session>[];
+  vaccines: Partial<Vaccine>[];
 }

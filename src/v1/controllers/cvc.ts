@@ -4,17 +4,25 @@ import {
   CVCTypeEnum,
   VaccineTypeEnum,
 } from '../../common/schema/composite';
-import {CVCRequest, CVCResponseData, PaginatedCVCData} from '../schema/cvc';
+import {
+  CVCRequest,
+  CVCResponseData,
+  CVCSiteAddress,
+  PaginatedCVCData,
+} from '../schema/cvc';
 import cvcModel, {CenterDetails} from '../../models/cvc';
+import {FilterQuery} from 'mongoose';
 
 @Tags('CVC')
 @Route('/api/v1/cvc')
 export class CVCController {
   @Post('/')
   public async search(@Body() req: CVCRequest): Promise<PaginatedCVCData> {
+    console.log(req);
     const query = this.getQuery(req);
     const limit = req.page_size || 25;
     const skip = ((req.page_number || 1) - 1) * limit;
+    console.log(query);
     const data = await cvcModel.find(query).skip(skip).limit(limit).exec();
     const count = await cvcModel.find(query).count();
     const total = count % limit === 0 ? count / limit : 1 + count / limit;
@@ -27,46 +35,52 @@ export class CVCController {
   }
 
   private getQuery(params: CVCRequest) {
-    const query = [];
-    if (params.district) {
-      query.push({'cowin.district_name': params.district});
+    const query: FilterQuery<CenterDetails> = {};
+    if (params.district_id) {
+      query['district_id'] = params.district_id;
+    } else if (params.district) {
+      query['cowin.district_name'] = params.district;
     } else if (params.pincode) {
-      query.push({'cowin.pincode': params.pincode});
+      query['cowin.pincode'] = params.pincode;
     }
-    return {$and: query};
+    return query;
   }
 
   private formatData(data: CenterDetails[]): CVCResponseData[] {
     const result: CVCResponseData[] = [];
     data.forEach(doc => {
+      if (!doc.cowin || !doc.cowin.name || !doc.cowin.center_id) {
+        return;
+      }
+      const address: CVCSiteAddress = {
+        block: doc.cowin.block_name || '',
+        district: doc.cowin.district_name || '',
+        state: doc.cowin.state_name || '',
+        pincode: doc.cowin.pincode || '',
+      };
       const formattedDoc: CVCResponseData = {
-        id: 'test',
+        id: doc._id,
         name: doc.cowin.name,
         cowin_center_id: doc.cowin.center_id,
         type: CVCTypeEnum.UNKNOWN,
-        address: {
-          block: doc.cowin.block_name,
-          district: doc.cowin.district_name,
-          state: doc.cowin.state_name,
-          pincode: doc.cowin.pincode,
-        },
+        address: address,
         last_verified_at: doc.last_verified_at,
         slots: [
           {
-            start_time: doc.cowin.from,
-            end_time: doc.cowin.to,
+            start_time: doc.cowin.from || '',
+            end_time: doc.cowin.to || '',
           },
         ],
         operation_timings: {
-          start_time: doc.cowin.from,
-          end_time: doc.cowin.to,
+          start_time: doc.cowin.from || '',
+          end_time: doc.cowin.to || '',
         },
-        vaccine_count: 100,
-        status: CVCStatusEnum.UNKNOWN,
-        google_maps_url: 'test_url',
+        vaccine_count: -1,
+        status: doc.status,
+        google_maps_url: '',
         vaccines: [
           {
-            name: '',
+            name: 'DUMMY',
             type: VaccineTypeEnum.UNKNOWN,
             count: 0,
             cost: 0,

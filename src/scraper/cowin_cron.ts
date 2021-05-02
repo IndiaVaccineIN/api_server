@@ -21,6 +21,7 @@ import logger from '../logger';
 import {BeneficiariesSchema} from '../common/schema/cowin-dashboard';
 
 dotenv.config();
+
 // build a map of states
 const states: {[id: string]: State} = {};
 States.map(s => {
@@ -65,7 +66,7 @@ function buildCowinCenter(
   _cvc: BeneficiariesSchema
 ): CowinCenter {
   return {
-    center_id: _centre.center_id.toString(), // FIXME: Joel should probably be kept as number instead of string
+    center_id: _centre.center_id,
     name: _centre.name,
     state_name: _centre.state_name,
     district_name: _centre.district_name,
@@ -83,6 +84,7 @@ function buildCowinCenter(
 
 // main function
 (async () => {
+  await createMongoConnections();
   for (const d of Districts) {
     const batch: Partial<CenterUpsertRequest>[] = [];
     const dist = new District(
@@ -90,6 +92,7 @@ function buildCowinCenter(
       d.district_name,
       states[d.state_id]
     );
+
     const centerResp = await dist.getCenters(
       DateTime.now().setZone('Asia/Kolkata')
     );
@@ -124,6 +127,8 @@ function buildCowinCenter(
 
       batch.push(center);
     }
-    await upsertCowinCenters(batch);
+    logger.debug(`running upsert on batch (${batch.length})`);
+    //await upsertCowinCenters(batch);
   }
+  exit(0);
 })();
