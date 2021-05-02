@@ -27,4 +27,10 @@ spec:
         - image: __IMAGE__NAME__
           imagePullPolicy: Always
           name: india-vaccine-api-server
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  key: url
+                  name: api-server-mongo-creds
       terminationGracePeriodSeconds: 30
