@@ -64,8 +64,8 @@ function buildVaccine(_centre: SessionCalendarEntrySchema) {
 function buildCowinCenter(
   _centre: SessionCalendarEntrySchema,
   _cvc: BeneficiariesSchema
-): CowinCenter {
-  return {
+): Partial<CowinCenter> {
+  const resp: Partial<CowinCenter> = {
     center_id: _centre.center_id,
     name: _centre.name,
     state_name: _centre.state_name,
@@ -75,11 +75,14 @@ function buildCowinCenter(
     from: _centre.from,
     to: _centre.to,
     fee_type: _centre.fee_type,
-    today: _cvc ? _cvc.today : 0,
-    // FIXME: Joel : this can have problems that it will overwrite a previous total
-    // with 0 if a CVC match was not found from the dashboard data set
-    total: _cvc ? _cvc.total : 0,
+    // Start with 0 if no data is found.
+    today: 0,
   };
+  if (_cvc) {
+    resp.today = _cvc.today;
+    resp.total = _cvc.total;
+  }
+  return resp;
 }
 
 // main function
