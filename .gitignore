@@ -104,5 +104,6 @@ typings/
 
 # Editor related folder
 .idea/
+.vscode/
 
 build/

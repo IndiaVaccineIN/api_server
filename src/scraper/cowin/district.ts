@@ -1,5 +1,9 @@
 import {DateTime} from 'luxon';
 import {SessionCalendarEntrySchema, State} from '../../common/schema/cowin';
+import {
+  CowinPublicReportsSchema,
+  BeneficiariesSchema,
+} from '../../common/schema/cowin-dashboard';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
@@ -24,18 +28,29 @@ export class District {
   }
 
   // Uncomment when importing dashboard data as well
-  //   async getCVCs(date: DateTime) {
-  //     const url = 'https://api.cowin.gov.in/api/v1/reports/v2/getPublicReports';
-  //     const params = {
-  //       state_id: this.state.state_id,
-  //       district_id: this.id,
-  //       date: date.toFormat('yyyy-MM-dd'),
-  //     };
-  //     const resp = await axios.get(url, {params: params});
-  //     return resp.data.getBeneficiariesGroupBy.map(
-  //       c => new CVC(c.session_site_id, c.session_site_name, c.today, this, c)
-  //     );
-  //   }
+  async getCVCs(date: DateTime): Promise<BeneficiariesSchema[]> {
+    const url = 'https://api.cowin.gov.in/api/v1/reports/v2/getPublicReports';
+    const params = {
+      state_id: this.state.state_id,
+      district_id: this.id,
+      date: date.toFormat('yyyy-MM-dd'),
+    };
+    let resp;
+    try {
+      resp = await axios.get(url, {params: params});
+    } catch (e) {
+      if (e.response.status !== 200) {
+        console.log(
+          `Got response $ {e.response.status}for ${this.state.state_name} -> ${this.name}`
+        );
+        return [];
+      }
+      throw e;
+    }
+
+    const data = (resp.data as unknown) as CowinPublicReportsSchema;
+    return data.getBeneficiariesGroupBy;
+  }
 
   async getCenters(date: DateTime): Promise<SessionCalendarEntrySchema[]> {
     const url =

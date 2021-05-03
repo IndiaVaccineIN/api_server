@@ -1,5 +1,7 @@
 import {District} from '../schema/cowin';
 
+/// FIXME:Joel
+/// Change to using the api to fetch the list of states
 export const Districts: District[] = [
   {
     district_id: 3,

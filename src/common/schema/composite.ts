@@ -1,3 +1,4 @@
+// import {DateTime} from 'luxon';
 import {CenterResponseSchema, Session} from './cowin';
 
 export interface Vaccine {
@@ -23,6 +24,7 @@ export enum CVCStatusEnum {
 export interface CowinCenter extends CenterResponseSchema {
   today?: number;
   total?: number;
+  // scraped_at: DateTime;
 }
 
 export enum CVCTypeEnum {
