@@ -295,6 +295,46 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"State": {
+				"description": "If you've taken up the task to update this schema, follow these steps:\n- Get the link to the latest swagger/openapi definition file\n- Current: https://apisetu.gov.in/public/api/cowin\n- Yaml: https://apisetu.gov.in/api_specification_v10/cowin-public-v2.yaml\n- Then run  npx openapi-typescript https://apisetu.gov.in/api_specification_v10/cowin-public-v2.yaml --output temp.ts\n- You'll probably need to make minor edits in code of that package to make it work (content-type header was missing)\n- Copy paste relevant schema from temp.ts and make edits\n\nIt's not completely automated way to do things, but it beats copy pasta the schema by hand\nNote: There's a good chance that data in mongo looks a lot like this schema.\nMake sure you migrate old data over to this format.",
+				"properties": {
+					"state_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"state_name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"state_id",
+					"state_name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"District": {
+				"properties": {
+					"state_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"district_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"district_name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"state_id",
+					"district_id",
+					"district_name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CallRequest": {
 				"properties": {
 					"pincode": {
@@ -401,6 +441,65 @@
 						}
 					}
 				}
+			}
+		},
+		"/api/v1/meta/states": {
+			"get": {
+				"operationId": "States",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/State"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Meta"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/v1/meta/states/{state_id}": {
+			"get": {
+				"operationId": "Districts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/District"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Meta"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "state_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/v1/volunteer/call_request": {

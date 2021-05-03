@@ -7,6 +7,8 @@ import swaggerUi from 'swagger-ui-express';
 
 import devAPIs from './v1/routes';
 
+import cors from 'cors';
+
 dotenv.config();
 (async () => {
   await createMongoConnections();
@@ -18,6 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 app.use(
   '/docs',
@@ -28,7 +35,14 @@ app.use(
     },
   })
 );
+const healthRouter = express.Router();
+const groot = (req: any, res: any) => {
+  res.send('I am groot');
+};
+healthRouter.get('/healthz', groot);
+healthRouter.get('/', groot);
+healthRouter.get('/health', groot);
 
 app.use('/api/v1', devAPIs);
-
+app.use('/', healthRouter);
 export default app;
