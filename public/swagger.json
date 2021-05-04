@@ -195,7 +195,8 @@
 				"properties": {
 					"total": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Total number of pages"
 					},
 					"page_number": {
 						"type": "number",

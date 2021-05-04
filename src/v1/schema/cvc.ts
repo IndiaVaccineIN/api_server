@@ -91,6 +91,9 @@ export interface CVCResponseData {
   vaccines: Vaccine[];
 }
 export interface PaginatedCVCData {
+  /**
+   * Total number of pages
+   */
   total: number;
   page_number: number;
   page_size: number;
