@@ -25,7 +25,10 @@ export class CVCController {
     console.log(query);
     const data = await cvcModel.find(query).skip(skip).limit(limit).exec();
     const count = await cvcModel.find(query).count();
-    const total = count % limit === 0 ? count / limit : 1 + count / limit;
+    const total =
+      count % limit === 0
+        ? Math.floor(count / limit)
+        : 1 + Math.floor(count / limit);
     return {
       results: this.formatData(data),
       total: total,
