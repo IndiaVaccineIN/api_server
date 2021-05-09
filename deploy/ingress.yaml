@@ -4,6 +4,18 @@ metadata:
   name: api-server
   namespace: default
 spec:
-  backend:
-    serviceName: api-server
-    servicePort: 3000
+  rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: frontend
+              servicePort: 3000
+          - path: /api
+            backend:
+              serviceName: api-server
+              servicePort: 3000
+          - path: /docs
+            backend:
+              serviceName: api-server
+              servicePort: 3000

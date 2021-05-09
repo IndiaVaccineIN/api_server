@@ -24,7 +24,7 @@ spec:
         app: api-server
     spec:
       containers:
-        - image: __IMAGE__NAME__
+        - image: 719591212312.dkr.ecr.ap-south-1.amazonaws.com/api-server:__IMAGE_VERSION__
           imagePullPolicy: Always
           name: india-vaccine-api-server
           env:
