@@ -1,7 +1,7 @@
-import {Route, Tags, Post, Body} from 'tsoa';
+import {Body, Post, Route, Tags} from 'tsoa';
 import {
-  CVCStatusEnum,
   CVCTypeEnum,
+  Vaccine,
   VaccineTypeEnum,
 } from '../../common/schema/composite';
 import {
@@ -55,6 +55,14 @@ export class CVCController {
       if (!doc.cowin || !doc.cowin.name || !doc.cowin.center_id) {
         return;
       }
+
+      const vaccines: Vaccine[] = doc.vaccines.map(x => ({
+        name: x.name || '',
+        type: x.type || VaccineTypeEnum.UNKNOWN,
+        count: x.count || 0,
+        cost: x.cost || 0,
+      }));
+
       const address: CVCSiteAddress = {
         block: doc.cowin.block_name || '',
         district: doc.cowin.district_name || '',
@@ -81,14 +89,7 @@ export class CVCController {
         vaccine_count: -1,
         status: doc.status,
         google_maps_url: '',
-        vaccines: [
-          {
-            name: 'DUMMY',
-            type: VaccineTypeEnum.UNKNOWN,
-            count: 0,
-            cost: 0,
-          },
-        ],
+        vaccines: vaccines,
       };
       result.push(formattedDoc);
     });
