@@ -12,7 +12,7 @@ Requirements:
 npm install
 ```
 
-## Usage
+## Development
 
 Create a .env file in the root folder. Use .env.example as a staring place
 
