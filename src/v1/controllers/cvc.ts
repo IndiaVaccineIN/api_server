@@ -25,7 +25,7 @@ export class CVCController {
     console.log(query);
     const data = await cvcModel
       .find(query)
-      .sort([['updatedAt', -1]])
+      .sort([['updated_at', -1]])
       .skip(skip)
       .limit(limit)
       .exec();
@@ -59,7 +59,7 @@ export class CVCController {
     //as midnight
     const lastCronUpdateTime = this.getLastCronUpdateTime(1800000, 0);
 
-    query['updatedAt'] = {$gt: lastCronUpdateTime};
+    query['updated_at'] = {$gt: lastCronUpdateTime};
     return query;
   }
 
