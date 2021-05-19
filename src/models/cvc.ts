@@ -49,7 +49,7 @@ const cvcDataStoreSchemaFields: Record<keyof Center, any> = {
 export interface CenterDetails extends Center, Document {}
 
 const cvcSchema: Schema<CenterDetails> = new Schema(cvcDataStoreSchemaFields, {
-  timestamps: true,
+  timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
 });
 cvcSchema.index(
   {state_id: 1, district_id: 1, 'cowin.center_id': 1},
@@ -58,7 +58,7 @@ cvcSchema.index(
 cvcSchema.index({district_id: 1}, {background: true});
 cvcSchema.index({'cowin.district_name': 1}, {background: true});
 cvcSchema.index({'cowin.pincode': 1}, {background: true});
-cvcSchema.index({updatedAt: -1}, {background: true});
+cvcSchema.index({updated_at: -1}, {background: true});
 // Todo: Add more indexes for search
 
 cvcSchema.methods.toJSON = function () {
