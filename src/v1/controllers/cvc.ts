@@ -24,7 +24,12 @@ export class CVCController {
     const limit = req.page_size || 25;
     const skip = ((req.page_number || 1) - 1) * limit;
     console.log(query);
-    const data = await cvcModel.find(query).skip(skip).limit(limit).exec();
+    const data = await cvcModel
+      .find(query)
+      .sort([['updatedAt', -1]])
+      .skip(skip)
+      .limit(limit)
+      .exec();
     const count = await cvcModel.find(query).count();
     const total =
       count % limit === 0
@@ -39,7 +44,7 @@ export class CVCController {
   }
 
   private getQuery(params: CVCRequest) {
-    const query: FilterQuery<CenterDetails> = {};
+    const query: FilterQuery<Object> = {};
     if (params.district_id) {
       query['district_id'] = params.district_id;
     } else if (params.district) {
@@ -47,7 +52,54 @@ export class CVCController {
     } else if (params.pincode) {
       query['cowin.pincode'] = params.pincode;
     }
+
+    //TODO see if multiple calls to get midnight time can be reduced
+    //TODO read cron frequency and first cron run time of day from somewhere
+    //instead of using static values
+    //Currently setting this frequency as 30mins and first run time of day
+    //as midnight
+    const lastCronUpdateTime = this.getLastCronUpdateTime(1800000, 0);
+
+    query['updatedAt'] = {$gt: lastCronUpdateTime};
     return query;
+  }
+
+  private getLastCronUpdateTime(
+    cronFrequencyInMs: number,
+    firstTimeOfDayInMsWhenCronRuns: number
+  ) {
+    const currentTimeOfDayInMs = this.getCurrentTimeOfDayInMs();
+
+    const timeDurationInMsSinceFirstCronRun =
+      currentTimeOfDayInMs - firstTimeOfDayInMsWhenCronRuns;
+
+    if (timeDurationInMsSinceFirstCronRun >= 0) {
+      const remainder = timeDurationInMsSinceFirstCronRun % cronFrequencyInMs;
+
+      return this.getLastMidnight() + currentTimeOfDayInMs - remainder;
+    }
+
+    const midnightTime = this.getLastMidnight();
+    const firstCronRunTime = midnightTime + firstTimeOfDayInMsWhenCronRuns;
+
+    return firstCronRunTime - cronFrequencyInMs;
+  }
+
+  private getCurrentTimeOfDayInMs() {
+    const midnightTime = this.getLastMidnight();
+    const currentTime = new Date().getTime();
+
+    return currentTime - midnightTime;
+  }
+
+  private getLastMidnight() {
+    const currentTime = new Date();
+
+    currentTime.setHours(0, 0, 0, 0);
+
+    console.log('currentTime: ' + currentTime);
+
+    return currentTime.getTime();
   }
 
   private formatData(data: CenterDetails[]): CVCResponseData[] {
