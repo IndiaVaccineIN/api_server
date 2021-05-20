@@ -1,5 +1,5 @@
 // import {DateTime} from 'luxon';
-import {CenterResponseSchema, Session} from './cowin';
+import {CenterResponseSchema, CowinSession} from './cowin';
 
 export interface Vaccine {
   name: string;
@@ -39,6 +39,6 @@ export interface CenterUpsertRequest {
   district_id: number;
   status: CVCStatusEnum;
   cowin: Partial<CowinCenter>;
-  sessions: Partial<Session>[];
+  sessions: Partial<CowinSession>[];
   vaccines: Partial<Vaccine>[];
 }
