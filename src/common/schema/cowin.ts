@@ -32,6 +32,9 @@ export interface CenterResponseSchema {
   name: string;
   /** Name in preferred language as specified in Accept-Language header parameter. */
   name_l?: string;
+  address?: string;
+  /** Address line in preferred language as specified in Accept-Language header parameter. */
+  address_l?: string;
   state_name: string;
   /** State name in preferred language as specified in Accept-Language header parameter. */
   state_name_l?: string;
@@ -54,7 +57,12 @@ export interface SessionResponseSchema extends CenterResponseSchema {
   fee: string;
   session_id: string;
   date: string;
+  /** Total available capacity of the session. */
   available_capacity: number;
+  /** Available capacity for dose 1. */
+  available_capacity_dose1?: number;
+  /** Available capacity for dose 2. */
+  available_capacity_dose2?: number;
   min_age_limit: number;
   vaccine: string;
   /** Array of slot names */
@@ -66,6 +74,9 @@ export interface SessionCalendarEntrySchema {
   name: string;
   /** Name in preferred language as specified in Accept-Language header parameter. */
   name_l?: string;
+  address?: string;
+  /** Address line in preferred language as specified in Accept-Language header parameter. */
+  address_l?: string;
   state_name: string;
   /** State name in preferred language as specified in Accept-Language header parameter. */
   state_name_l?: string;
@@ -89,7 +100,12 @@ export interface SessionCalendarEntrySchema {
 export interface CowinSession {
   session_id: string;
   date: string;
+  /** Total available capacity of the session. */
   available_capacity: number;
+  /** Available capacity for dose 1. */
+  available_capacity_dose1?: number;
+  /** Available capacity for dose 2. */
+  available_capacity_dose2?: number;
   min_age_limit: number;
   vaccine: string;
   /** Array of slot names */
