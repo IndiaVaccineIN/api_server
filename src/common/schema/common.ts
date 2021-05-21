@@ -19,6 +19,8 @@ export const sessionSchemaFields: Record<keyof CowinSession, any> = {
     required: true,
   },
   available_capacity: Number,
+  available_capacity_dose1: Number,
+  available_capacity_dose2: Number,
   min_age_limit: Number,
   vaccine: String,
   /** Array of slot names */
@@ -71,6 +73,11 @@ export const CowinCenterSchemaFields: Record<keyof CowinCenter, any> = {
     type: String,
     default: '',
   },
+  address: {
+    type: String,
+    default: '',
+  },
+  address_l: String,
   lat: Float32Array,
   long: Float32Array,
   from: String,
