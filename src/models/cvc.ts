@@ -59,6 +59,7 @@ cvcSchema.index({district_id: 1}, {background: true});
 cvcSchema.index({'cowin.district_name': 1}, {background: true});
 cvcSchema.index({'cowin.pincode': 1}, {background: true});
 cvcSchema.index({updated_at: -1}, {background: true});
+cvcSchema.index({'cowin.center_id': 1}, {background: true});
 // Todo: Add more indexes for search
 
 cvcSchema.methods.toJSON = function () {

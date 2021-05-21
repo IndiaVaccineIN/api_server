@@ -68,6 +68,7 @@ function buildCowinCenter(
   const resp: Partial<CowinCenter> = {
     center_id: _centre.center_id,
     name: _centre.name,
+    address: _centre.address,
     state_name: _centre.state_name,
     district_name: _centre.district_name,
     block_name: _centre.block_name,
