@@ -5,6 +5,8 @@ import {
   VaccineTypeEnum,
 } from '../../common/schema/composite';
 
+import {CowinSession} from '../../common/schema/cowin';
+
 export enum SortOrderEnum {
   ASC = 'ASC',
   DESC = 'DESC',
@@ -89,8 +91,12 @@ export interface CVCResponseData {
   next_stock_refresh_on?: Date;
   google_maps_url: string;
   vaccines: Vaccine[];
+  sessions: CowinSession[];
 }
 export interface PaginatedCVCData {
+  /**
+   * Total number of pages
+   */
   total: number;
   page_number: number;
   page_size: number;

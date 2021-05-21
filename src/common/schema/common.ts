@@ -1,5 +1,5 @@
 import {Schema, Document} from 'mongoose';
-import {CenterResponseSchema, Session} from '../../common/schema/cowin';
+import {CenterResponseSchema, CowinSession} from '../../common/schema/cowin';
 //import uuid from 'node-uuid';
 
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../common/schema/composite';
 //import {DateTime} from 'luxon';
 
-export const sessionSchemaFields: Record<keyof Session, any> = {
+export const sessionSchemaFields: Record<keyof CowinSession, any> = {
   session_id: {
     type: String,
     required: true,

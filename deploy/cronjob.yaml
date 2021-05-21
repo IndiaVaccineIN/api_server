@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
             - name: api-refresh-data
-              image: __IMAGE__NAME__
+              image: 719591212312.dkr.ecr.ap-south-1.amazonaws.com/api-server:__IMAGE_VERSION__
               command:
                 - npm
                 - run

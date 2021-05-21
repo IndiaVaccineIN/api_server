@@ -119,6 +119,44 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CowinSession": {
+				"properties": {
+					"session_id": {
+						"type": "string"
+					},
+					"date": {
+						"type": "string"
+					},
+					"available_capacity": {
+						"type": "number",
+						"format": "double"
+					},
+					"min_age_limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"vaccine": {
+						"type": "string"
+					},
+					"slots": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "Array of slot names"
+					}
+				},
+				"required": [
+					"session_id",
+					"date",
+					"available_capacity",
+					"min_age_limit",
+					"vaccine",
+					"slots"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CVCResponseData": {
 				"properties": {
 					"id": {
@@ -172,6 +210,12 @@
 							"$ref": "#/components/schemas/Vaccine"
 						},
 						"type": "array"
+					},
+					"sessions": {
+						"items": {
+							"$ref": "#/components/schemas/CowinSession"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -186,7 +230,8 @@
 					"vaccine_count",
 					"status",
 					"google_maps_url",
-					"vaccines"
+					"vaccines",
+					"sessions"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -195,7 +240,8 @@
 				"properties": {
 					"total": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Total number of pages"
 					},
 					"page_number": {
 						"type": "number",
