@@ -10,7 +10,7 @@ export async function upsertCowinCenters(data: Partial<CenterUpsertRequest>[]) {
         if (!doc.cowin || !doc.cowin.center_id) return null;
         return {
           updateOne: {
-            filter: {'cowin.center_id': doc.cowin.center_id},
+            filter: {'state_id': doc.state_id, 'district_id': doc.district_id, 'cowin.center_id': doc.cowin.center_id},
             update: {$set: makeUpsertReq(doc)},
             upsert: true,
           },
