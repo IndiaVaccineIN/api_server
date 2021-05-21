@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: api-refresh-data
 spec:
-  schedule: '*/30 * * * *'
+  schedule: '*/10 * * * *'
   jobTemplate:
     spec:
       template:

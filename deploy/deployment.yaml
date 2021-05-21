@@ -28,6 +28,8 @@ spec:
           imagePullPolicy: Always
           name: india-vaccine-api-server
           env:
+            - name: CVC_UPDATED_AT_THRESHOLD_DIFF
+              value: '30'
             - name: MONGODB_URL
               valueFrom:
                 secretKeyRef:

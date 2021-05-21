@@ -129,7 +129,18 @@
 					},
 					"available_capacity": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Total available capacity of the session."
+					},
+					"available_capacity_dose1": {
+						"type": "number",
+						"format": "double",
+						"description": "Available capacity for dose 1."
+					},
+					"available_capacity_dose2": {
+						"type": "number",
+						"format": "double",
+						"description": "Available capacity for dose 2."
 					},
 					"min_age_limit": {
 						"type": "number",
