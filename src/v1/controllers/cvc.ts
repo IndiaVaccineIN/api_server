@@ -24,7 +24,12 @@ export class CVCController {
     const limit = req.page_size || 25;
     const skip = ((req.page_number || 1) - 1) * limit;
     console.log(query);
-    const data = await cvcModel.find(query).skip(skip).limit(limit).exec();
+    const data = await cvcModel
+      .find(query)
+      .sort([['updated_at', -1]])
+      .skip(skip)
+      .limit(limit)
+      .exec();
     const count = await cvcModel.find(query).count();
     const total =
       count % limit === 0
@@ -39,7 +44,7 @@ export class CVCController {
   }
 
   private getQuery(params: CVCRequest) {
-    const query: FilterQuery<CenterDetails> = {};
+    const query: FilterQuery<Object> = {};
     if (params.district_id) {
       query['district_id'] = params.district_id;
     } else if (params.district) {
@@ -47,6 +52,16 @@ export class CVCController {
     } else if (params.pincode) {
       query['cowin.pincode'] = params.pincode;
     }
+
+    const cvcUpdatedAtThresholdDiffInMins =
+      (process.env.CVC_UPDATED_AT_THRESHOLD_DIFF &&
+        parseInt(process.env.CVC_UPDATED_AT_THRESHOLD_DIFF)) ||
+      90;
+
+    const cvcUpdatedAtThreshold =
+      Date.now() - cvcUpdatedAtThresholdDiffInMins * 60000;
+
+    query['updated_at'] = {$gt: cvcUpdatedAtThreshold};
     return query;
   }
 
