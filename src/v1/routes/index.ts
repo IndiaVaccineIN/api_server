@@ -11,6 +11,7 @@ import express from 'express';
 import {CVCController} from '../controllers/cvc';
 import {MetaController} from '../controllers/meta';
 import {VolunteerController} from '../controllers/volunteer';
+import {FormController} from '../controllers/form';
 const router = express.Router();
 
 // /* Write Data to Mongo*/
@@ -108,6 +109,13 @@ router.post('/volunteer/report', async (req, res) => {
   const controller = new VolunteerController();
   const body = req.body;
   const response = await controller.report(body);
+  return res.send(response);
+});
+
+router.post('/form/vaccination_experience', async (req, res) => {
+  const controller = new FormController();
+  const body = req.body;
+  const response = await controller.callRequest(body);
   return res.send(response);
 });
 
