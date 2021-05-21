@@ -12,6 +12,7 @@ import {
 } from '../schema/cvc';
 import cvcModel, {CenterDetails} from '../../models/cvc';
 import {FilterQuery} from 'mongoose';
+import {CowinSession} from '../../common/schema/cowin';
 
 @Tags('CVC')
 @Route('/api/v1/cvc')
@@ -78,6 +79,15 @@ export class CVCController {
         cost: x.cost || 0,
       }));
 
+      const sessions: CowinSession[] = doc.sessions.map(x => ({
+        session_id: x.session_id || '',
+        date: x.date || '',
+        available_capacity: x.available_capacity || 0,
+        min_age_limit: x.min_age_limit || 0,
+        vaccine: x.vaccine || '',
+        slots: x.slots || [''],
+      }));
+
       const address: CVCSiteAddress = {
         block: doc.cowin.block_name || '',
         district: doc.cowin.district_name || '',
@@ -105,6 +115,7 @@ export class CVCController {
         status: doc.status,
         google_maps_url: '',
         vaccines: vaccines,
+        sessions: sessions,
       };
       result.push(formattedDoc);
     });

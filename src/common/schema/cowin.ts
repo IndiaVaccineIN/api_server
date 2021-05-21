@@ -83,10 +83,10 @@ export interface SessionCalendarEntrySchema {
   /** Fee charged for vaccination */
   fee_type: 'Free' | 'Paid';
   vaccine_fees?: VaccineFeeSchema[];
-  sessions: Session[];
+  sessions: CowinSession[];
 }
 
-export interface Session {
+export interface CowinSession {
   session_id: string;
   date: string;
   available_capacity: number;
