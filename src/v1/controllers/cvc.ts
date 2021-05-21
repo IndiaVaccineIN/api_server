@@ -52,53 +52,16 @@ export class CVCController {
       query['cowin.pincode'] = params.pincode;
     }
 
-    //TODO see if multiple calls to get midnight time can be reduced
-    //TODO read cron frequency and first cron run time of day from somewhere
-    //instead of using static values
-    //Currently setting this frequency as 30mins and first run time of day
-    //as midnight
-    const lastCronUpdateTime = this.getLastCronUpdateTime(1800000, 0);
+    const cvcUpdatedAtThresholdDiffInMins =
+      (process.env.CVC_UPDATED_AT_THRESHOLD_DIFF &&
+        parseInt(process.env.CVC_UPDATED_AT_THRESHOLD_DIFF)) ||
+      90;
 
-    query['updated_at'] = {$gt: lastCronUpdateTime};
+    const cvcUpdatedAtThreshold =
+      Date.now() - cvcUpdatedAtThresholdDiffInMins * 60000;
+
+    query['updated_at'] = {$gt: cvcUpdatedAtThreshold};
     return query;
-  }
-
-  private getLastCronUpdateTime(
-    cronFrequencyInMs: number,
-    firstTimeOfDayInMsWhenCronRuns: number
-  ) {
-    const currentTimeOfDayInMs = this.getCurrentTimeOfDayInMs();
-
-    const timeDurationInMsSinceFirstCronRun =
-      currentTimeOfDayInMs - firstTimeOfDayInMsWhenCronRuns;
-
-    if (timeDurationInMsSinceFirstCronRun >= 0) {
-      const remainder = timeDurationInMsSinceFirstCronRun % cronFrequencyInMs;
-
-      return this.getLastMidnight() + currentTimeOfDayInMs - remainder;
-    }
-
-    const midnightTime = this.getLastMidnight();
-    const firstCronRunTime = midnightTime + firstTimeOfDayInMsWhenCronRuns;
-
-    return firstCronRunTime - cronFrequencyInMs;
-  }
-
-  private getCurrentTimeOfDayInMs() {
-    const midnightTime = this.getLastMidnight();
-    const currentTime = new Date().getTime();
-
-    return currentTime - midnightTime;
-  }
-
-  private getLastMidnight() {
-    const currentTime = new Date();
-
-    currentTime.setHours(0, 0, 0, 0);
-
-    console.log('currentTime: ' + currentTime);
-
-    return currentTime.getTime();
   }
 
   private formatData(data: CenterDetails[]): CVCResponseData[] {
